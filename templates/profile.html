@@ -7,6 +7,12 @@
             Welcome to the web app, {{ user }}!
         {% else %}
             Welcome to the web app, anonymous!
+            The following users are registered:
+            <ul>
+                {% for u in reg %}
+                    <li> {{ u }} </li>
+                {% endfor %}
+            </ul>
         {% endif %}
     </body>
 </html>

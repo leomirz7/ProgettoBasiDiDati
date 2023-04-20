@@ -1,4 +1,6 @@
-from flask import Flask, render_template
+
+
+from flask import Flask, render_template, redirect, url_for, request
 
 app = Flask(__name__)
 
@@ -14,4 +16,10 @@ def show_profile(username):
     if username in users:
         return render_template('profile.html', user=username)
     else:
-        return render_template('profile.html')
+        return render_template('profile.html', reg=users)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    user = request.form["user"]
+    return redirect(url_for('show_profile', username=user))

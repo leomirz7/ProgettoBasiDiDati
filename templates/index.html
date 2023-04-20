@@ -3,7 +3,10 @@
         <title>My fancy web app</title>
     </head>
     <body>
-        Hello world! <br/>
-        Click <a href="/users/anonymous"/>here</a> to continue.
+        Insert your username:
+        <form action="/login" method="POST">
+            <input name="user" type="text">
+            <input type="submit">
+        </form>
     </body>
 </html>

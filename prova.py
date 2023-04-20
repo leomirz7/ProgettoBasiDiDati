@@ -13,5 +13,5 @@ def show_profile(username):
     users = ['alice', 'bob', 'charlie']
     if username in users:
         return render_template('profile.html', user=username)
-    else :
+    else:
         return render_template('profile.html')

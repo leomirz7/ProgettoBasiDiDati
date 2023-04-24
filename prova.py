@@ -1,8 +1,13 @@
-
-
 from flask import Flask, render_template, redirect, url_for, request
 
+from flask_login import *
+
 app = Flask(__name__)
+
+app = Flask( __name__ )
+app.config['SECRET_KEY'] = 'ubersecret'
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 @app.route('/')

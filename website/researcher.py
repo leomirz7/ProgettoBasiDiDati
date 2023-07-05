@@ -6,4 +6,5 @@ researcher = Blueprint('researcher', __name__)
 @researcher.route('/researcher')
 @login_required
 def private():
+    print("researcher private")
     return "pagina del ricercatore"

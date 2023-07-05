@@ -1,0 +1,11 @@
+{% extends "base.html" %} {% block title %}Login{% endblock %} {% block content
+%}
+    Registrati:
+    <form method="POST">
+        username: <input name="user" type="text"> <br>
+        email: <input name="email" type="email"> <br>
+        Type: <input name="tipo" type="text"> <br>
+        password: <input name="pwd" type="password">
+        <input type="submit">
+    </form>
+{% endblock %}

@@ -7,4 +7,12 @@
     <orderEntry type="jdk" jdkName="Python 3.9 (Progetto Basi di Dati)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
+  <component name="TemplatesService">
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$" />
+        <option value="$MODULE_DIR$/website/templates" />
+      </list>
+    </option>
+  </component>
 </module>

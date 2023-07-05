@@ -1,9 +1,30 @@
 {% extends "base.html" %} {% block title %}Login{% endblock %} {% block content
 %}
-    Insert your username and password:
-    <form method="POST">
-        <input name="email" type="text"> <br>
-        <input name="pwd" type="password">
-        <input type="submit">
-    </form>
+<form method="POST">
+    <h3 align="center">Login</h3>
+    <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+            name="email"
+            type="text"
+            class="form-control"
+            id="email"
+            placeholder="Enter email"
+            required
+        />
+    </div>
+    <div class="form-group">
+        <label for="email">Password</label>
+        <input
+            name="pwd"
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Enter password"
+            required
+        />
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary">Login</button>
+</form>
 {% endblock %}

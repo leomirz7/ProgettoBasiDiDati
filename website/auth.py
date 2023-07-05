@@ -15,9 +15,6 @@ def login():
 
         user = User.query.filter_by(email=email).first()
         if user:
-            print(email)
-            print(user.pwd)
-            print(pwd)
             if check_password_hash(user.pwd, pwd):
                 login_user(user, remember=True)
                 flash("logged in!", category='success')
@@ -39,21 +36,20 @@ def register():
         pwd = request.form.get('pwd')
 
         user = User.query.filter_by(email=email).first()
-        # controlli lunghezza e cose varie
-        # TODO per far vedere i flash, fare base.html come nel video
         if user:
-            print("no")
-            flash("email already exist", category='error')
+            flash("Email already exist", category='error')
         elif len(email) < 4:
-            print("noooo")
-            flash("email too short", category="error")
+            flash('Email must be greater than 3 characters.', category='error')
+        elif len(username) < 2:
+            flash('Username must be greater than 1 character.', category='error')
+        elif len(pwd) < 4:
+            flash('Password must be at least 4 characters.', category='error')
         else:
             new_user = User(username=username, email=email, pwd=generate_password_hash(pwd, method='sha256'), tipo=tipo)
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user, remember=True)
             flash("Account creato", category="success")
-            print("si")
             return redirect(url_for('redirect.home'))
 
     return render_template('register.html', user=current_user)

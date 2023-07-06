@@ -17,7 +17,7 @@ def login():
         if user:
             if check_password_hash(user.pwd, pwd):
                 login_user(user, remember=True)
-                flash("logged in!", category='success')
+                flash("Logged in!", category='success')
                 return redirect(url_for('redirect.home'))
             else:
                 flash("Password scorretta", category='error')

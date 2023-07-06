@@ -1,5 +1,5 @@
 from os import path
-from flask import Flask, render_template, redirect, url_for, request, make_response, blueprints
+from flask import Flask
 from flask_login import *
 from flask_sqlalchemy import SQLAlchemy
 
@@ -35,7 +35,6 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(id):
-        print("aaaaa")
         return User.query.get(int(id))
 
     return app

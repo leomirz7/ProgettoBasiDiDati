@@ -3,7 +3,8 @@ from flask_login import *
 
 evaluator = Blueprint('evaluator', __name__)
 
-@evaluator.route('/evaluator')
+@evaluator.route('/')
 @login_required
 def private():
-    return render_template('evaluator.html', user=current_user)
+    # return render_template('evaluator.html', user=current_user)
+    return 'ciao 2'

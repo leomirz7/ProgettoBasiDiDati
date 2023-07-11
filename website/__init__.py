@@ -18,12 +18,12 @@ def create_app():
     from .auth import auth
     from .researcher import researcher
     from .evaluator import evaluator
-    from .redirect import redirect
+    from .redirect import redirect2
 
     app.register_blueprint(auth, url_prefix='/auth')
-    app.register_blueprint(redirect)
-    app.register_blueprint(researcher)
-    app.register_blueprint(evaluator)
+    app.register_blueprint(redirect2, url_prefix='/')
+    app.register_blueprint(researcher, url_prefix='/researcher')
+    app.register_blueprint(evaluator, url_prefix='/evaluator')
 
     from .models import User
     from .models import Evaluator

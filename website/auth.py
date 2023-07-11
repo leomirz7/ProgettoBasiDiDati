@@ -28,8 +28,8 @@ def login():
 
 
                 flash("Logged in!", category='success')
-                print(url_for('redirect.home'))
-                return redirect(url_for('redirect.home'))
+                print(url_for('redirect2.home'))
+                return redirect(url_for('redirect2.home'))
             else:
                 flash("Password scorretta", category='error')
         else:
@@ -74,7 +74,7 @@ def register():
             login_user(new_child, remember=True)
             flash("Account creato", category="success")
 
-            return redirect(url_for('redirect.home'))
+            return redirect(url_for('redirect2.home'))
 
     return render_template('register.html', user=current_user)
 

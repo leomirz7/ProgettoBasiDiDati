@@ -4,11 +4,11 @@ from .models import User, Evaluator, Researcher
 from . import db
 
 
-redirect = Blueprint('redirect', __name__)
+redirect2 = Blueprint('redirect2', __name__)
 
 
-@redirect.route('/')
-# @login_required
+@redirect2.route('/')
+@login_required
 def home():
     # print(current_user.__class__.__name__)
     #
@@ -21,4 +21,4 @@ def home():
     #
     # print(url_for('researcher.private'))
     #
-    return redirect(url_for('redirect.home'))
+    return redirect(url_for('researcher.private'))

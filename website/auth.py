@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import *
 from werkzeug.security import check_password_hash, generate_password_hash
-from .models import User
+from .models import User, Evaluator, Researcher
+
 from . import db    # prende db da __init__.py
 
 auth = Blueprint('auth', __name__)
@@ -16,8 +17,18 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user:
             if check_password_hash(user.pwd, pwd):
-                login_user(user, remember=True)
+
+                ev = Evaluator.query.get(int(user.id))
+                res = Researcher.query.get(int(user.id))
+
+                if ev:
+                    login_user(ev, remember=True)
+                else:
+                    login_user(res, remember=True)
+
+
                 flash("Logged in!", category='success')
+                print(url_for('redirect.home'))
                 return redirect(url_for('redirect.home'))
             else:
                 flash("Password scorretta", category='error')
@@ -44,12 +55,25 @@ def register():
             flash('Username must be greater than 1 character.', category='error')
         elif len(pwd) < 4:
             flash('Password must be at least 4 characters.', category='error')
+        elif tipo != 'Researcher' and tipo != 'Evaluator':
+            flash('Tipo sbagliato', category='error')
         else:
-            new_user = User(username=username, email=email, pwd=generate_password_hash(pwd, method='sha256'), tipo=tipo)
+            new_user = User(username=username, email=email, pwd=generate_password_hash(pwd, method='sha256'))
             db.session.add(new_user)
+
+            user = User.query.filter_by(email=email).first()
+
+
+            if tipo == 'Researcher':
+                new_child = Researcher(user.id)
+            else:
+                new_child = Evaluator(user.id)
+
+            db.session.add(new_child)
             db.session.commit()
-            login_user(new_user, remember=True)
+            login_user(new_child, remember=True)
             flash("Account creato", category="success")
+
             return redirect(url_for('redirect.home'))
 
     return render_template('register.html', user=current_user)

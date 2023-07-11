@@ -6,4 +6,4 @@ evaluator = Blueprint('evaluator', __name__)
 @evaluator.route('/evaluator')
 @login_required
 def private():
-    return "pagina del valutatore"
+    return render_template('evaluator.html', user=current_user)

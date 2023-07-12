@@ -1,6 +1,6 @@
 from . import db
 from flask_login import *
-from sqlalchemy import  func
+from sqlalchemy import func, ForeignKeyConstraint
 import enum
 
 # le tabelle:
@@ -28,19 +28,24 @@ class Status(enum.Enum):
     PENDING = 'pending'
     CHANGES_REQUEST = 'changes_request'
     REJECTED = 'rejected'
+    NEW = 'new'
 
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
     description = db.Column(db.String(1000))
     status = db.Column(
         db.Enum(Status, values_callable=lambda obj: [
             e.value for e in obj]),
         nullable=False,
-        default=Status.PENDING.value,
-        server_default=Status.PENDING.value
+        default=Status.NEW.value,
+        server_default=Status.NEW.value
     )
     idRes = db.Column(db.Integer, db.ForeignKey('researcher.id'))
+
+    document = db.relationship('Document', backref='project')
+
 
     # __mapper_args__ = {
     #     'polymorphic_identity': 'project'
@@ -80,17 +85,26 @@ class Report(db.Model):
     text = db.Column(db.String(1000))
     idEval = db.Column(db.Integer, db.ForeignKey('evaluator.id'))
 
-    idDoc = db.Column(db.Integer, db.ForeignKey('document.id'))
+    idDocName = db.Column(db.Integer)
+    idDocProj = db.Column(db.Integer)
 
-    # __mapper_args__ = {
-    #     'polymorphic_identity': 'report'
-    # }
+    # document = db.relationship("Document", foreign_keys=[idDocName, idDocProj])
+
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ['idDocName', 'idDocProj'],
+            ['Document.name', 'Document.idProj '],
+        ),
+    )
 
 
 class Document(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150), primary_key=True)
     type = db.Column(db.String(150))
-    report = db.relationship('Report', backref='document')
+
+    idProj = db.Column(db.Integer, db.ForeignKey('project.id'), primary_key=True)
+    # report = db.relationship('Report', backref='document')
+
 
     # __mapper_args__ = {
     #     'polymorphic_identity': 'document'

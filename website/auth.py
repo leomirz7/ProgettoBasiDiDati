@@ -58,7 +58,7 @@ def register():
         elif tipo != 'Researcher' and tipo != 'Evaluator':
             flash('Tipo sbagliato', category='error')
         else:
-            new_user = User(username=username, email=email, pwd=generate_password_hash(pwd, method='sha256'))
+            new_user = User(username=username, email=email, pwd=generate_password_hash(pwd, method='scrypt'))
             db.session.add(new_user)
 
             user = User.query.filter_by(email=email).first()

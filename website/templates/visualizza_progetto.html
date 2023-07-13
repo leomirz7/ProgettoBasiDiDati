@@ -1,0 +1,32 @@
+{% extends "base.html" %} {% block title %}Project Page{% endblock %} {% block content
+%}
+
+
+
+
+    Nome: {{ p.name }}, Description {{ p.description }}, Status {{ p.status.value }}
+    </br>
+    Documenti:
+    {% for d in docs %}
+        <li>Name: {{ d.name }}, Type {{ d.type }} <a href="{{url_for('evaluator.download', p = p.id, dName = d.name)}}" target=”_blank”> View File </a>
+
+        {% for rep in reps %}
+            {{rep.idDocName}} : {{d.name}}</br>
+            {% if rep.idDocName == d.name %}
+
+                {%flag = d.name%}
+
+            {% endif %}
+
+        {% endfor %}
+
+        {% if flag%}
+            <a href="{{url_for('evaluator.report',  pip = p.id, r = sos, did = d.name)}}"> Edit Report </a>
+        {% else %}
+            <a href="{{url_for('evaluator.report',  pip = p.id, r = sos, did = d.name)}}"> Create Report </a>
+        {% endif %}
+        {{sos}}
+    {% endfor %}
+
+
+{% endblock %}

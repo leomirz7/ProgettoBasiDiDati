@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+{% extends "base.html" %} {% block title %}Edit Project{% endblock %} {% block content
 %}
 
     <form method="POST" enctype="multipart/form-data">
@@ -11,6 +11,7 @@
             class="form-control"
             id="name"
             placeholder="Project Name"
+            value="{{proj.name}}"
             required
         />
     </div>
@@ -23,24 +24,26 @@
             class="form-control"
             id="description"
             placeholder="Project Description"
+            value="{{proj.description}}"
             required
         />
     </div>
 
     <div class="form-group">
-    <label for="description">Project Description</label>
+    <label for="status">Project Status</label>
     <input
         name="status"
         type="text"
         class="form-control"
         id="status"
         placeholder="Project Status"
+        value="{{proj.status.value}}"
         required
     />
     </div>
     <br/>
     <div class="form-group">
-        <label for="description">Project Description</label>
+        <label for="description">Add Project Files</label>
         <input
             name="files"
             type="file"
@@ -48,7 +51,6 @@
             id="file"
             placeholder="Files"
             multiple
-            required
         />
     </div><br />
 

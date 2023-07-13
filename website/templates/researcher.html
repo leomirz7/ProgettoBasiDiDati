@@ -1,11 +1,11 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+{% extends "base.html" %} {% block title %}Researcher Home{% endblock %} {% block content
 %}
 
     Welcome to the web app, {{ user_data.username }}! </br>
 
     <a href="/researcher/create"> Clicca qui per aggiungere un progetto </a> </br>
 
-    Progetti:
+    Your projects:
     <ul>
     {% for p in projects %}
     <li>Nome: {{ p.name }}, Description {{ p.description }}, Status {{ p.status.value }} <a href="{{url_for('researcher.delete', id = p.id)}}"> delete </a>

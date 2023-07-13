@@ -86,10 +86,12 @@ def edit():
 
         # os.makedirs(f"{os.getcwd()}/files/{user.username}/{p_id}/")
 
+
         for file in files:
-            new_doc = Document(idProj=proj.id, name=file.filename)
-            db.session.add(new_doc)
-            file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+            if file.filename:
+                new_doc = Document(idProj=proj.id, name=file.filename)
+                db.session.add(new_doc)
+                file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
 
         proj.name = name
         proj.description = desc

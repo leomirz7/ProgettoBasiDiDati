@@ -85,22 +85,23 @@ class Report(db.Model):
     text = db.Column(db.String(1000))
     idEval = db.Column(db.Integer, db.ForeignKey('evaluator.id'))
 
-    idDocName = db.Column(db.Integer)
-    idDocProj = db.Column(db.Integer)
+    idDocName = db.Column(db.Integer, db.ForeignKey('document.name'))
+    idDocProj = db.Column(db.Integer, db.ForeignKey('document.idProj'))
 
-    # document = db.relationship("Document", foreign_keys=[idDocName, idDocProj])
+    #document = db.relationship("Document", foreign_keys=[idDocName, idDocProj])
 
-    __table_args__ = (
-        ForeignKeyConstraint(
-            ['idDocName', 'idDocProj'],
-            ['Document.name', 'Document.idProj '],
-        ),
-    )
+    # __table_args__ = (
+    #     ForeignKeyConstraint(
+    #         ['idDocName', 'idDocProj'],
+    #         ['Document.name', 'Document.idProj'],
+    #     ),
+    # )
 
 
 class Document(db.Model):
     name = db.Column(db.String(150), primary_key=True)
     type = db.Column(db.String(150))
+
 
     idProj = db.Column(db.Integer, db.ForeignKey('project.id'), primary_key=True)
     # report = db.relationship('Report', backref='document')

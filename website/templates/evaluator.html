@@ -1,4 +1,16 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content
+{% extends "base.html" %} {% block title %}Evaluator Home{% endblock %} {% block content
 %}
-    pagina del valutatore
+
+    Welcome to the web app, {{ user_data.username }}! </br>
+
+
+    All the projects:
+    <ul>
+    {% for p in projects %}
+    <li>Nome: {{ p.name }}, Description {{ p.description }}, Status {{ p.status.value }} <a href="{{url_for('evaluator.open', id = p.id)}}"> Apri </a>
+    {% endfor %}
+    </ul>
+
+
+
 {% endblock %}

@@ -25,23 +25,30 @@ def open():
     proj = Project.query.get(p_id)
     docs = Document.query.filter_by(idProj=p_id)
 
-    print(user.username)
+    reps = Report.query.filter_by(idDocProj=p_id)
+    for r in reps:
+        print(r)
+
+
+    # q = Report.query \
+    #     .join(Document, Document.name == Report.idDocName) \
+    #     .filter(Document.idProj == p_id, Document.idProj == Report.idDocProj).all()
+
+    # q = db.session.query(Document, Report).filter(Document.name == Report.idDocName and Document.idProj == Report.idDocProj and Document.idProj == p_id).all()
+
+
+    q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
+
+    for d in q:
+        print(d)
 
     if request.method == 'GET':
 
-        reps = Report.query.filter_by(idDocProj=p_id)
+        return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q)
+    # if request.method == 'POST':
+    #     print("ciao")
 
-        for r in reps.all():
-            print(vars(r))
-
-        for d in docs:
-            print(d)
-        flag = 1
-        render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, docs=docs, reps=reps, flag=flag)
-    if request.method == 'POST':
-        print("ciao")
-
-    return redirect(url_for('researcher.private'))
+    return redirect(url_for('evaluator.open'))
 
 @evaluator.route('/download')
 @login_required
@@ -60,7 +67,6 @@ def download():
 @login_required
 def report():
     projId = request.args.get('pip')
-    print(projId)
     proj = Project.query.get(int(projId))
 
     docId = request.args.get('did')
@@ -69,16 +75,23 @@ def report():
 
     rep = request.args.get('r')
 
+    sbab = Report.query.get(rep)
+
     if request.method == 'GET':
-        return render_template('report.html', user=current_user, user_data=user, p=proj, rep=rep)
+        return render_template('report.html', user=current_user, user_data=user, p=proj, rep=sbab)
 
 
     if request.method == 'POST':
         score = request.form.get('score')
         text = request.form.get('text')
 
-        new_report = Report(score=score, text=text, idEval=current_user.id, idDocName=docId, idDocProj=projId)
-        db.session.add(new_report)
+        if rep:
+            reps = Report.query.filter_by(id=rep).first()
+            reps.text = text
+            reps.score = score
+        else:
+            new_report = Report(score=score, text=text, idEval=current_user.id, idDocName=docId, idDocProj=projId)
+            db.session.add(new_report)
         db.session.commit()
 
         return redirect(url_for('evaluator.open', id=projId))

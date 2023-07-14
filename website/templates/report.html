@@ -11,8 +11,10 @@
             class="form-control"
             id="score"
             placeholder="Report Score"
-            value="{{rep.score}}"
-
+            {% if rep %}
+                value = "{{rep.score}}"
+            {% endif %}
+            required
         />
     </div>
 
@@ -24,7 +26,10 @@
             class="form-control"
             id="text"
             placeholder="Report Text"
-            value="{{rep.text}}"
+            {% if rep %}
+                value = "{{rep.text}}"
+            {% endif %}
+            required
         />
     </div>
 

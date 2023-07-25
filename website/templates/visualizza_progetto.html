@@ -5,11 +5,19 @@
     </br>
     Documenti:
     {% for d in q %}
-        <li>Name: {{ d[1].name }}, Type {{ d[1].type }} <a href="{{url_for('evaluator.download', p = p.id, dName = d[1].name)}}" target=”_blank”> View File </a>
-        {% if d[0] %}
+        <li>Name: <a href="{{url_for('evaluator.download', p = p.id, dName = d[1].name)}}" target=”_blank”>{{ d[1].name }}</a>, status {{ d[1].status.value }}  
+        {% if user.__class__.__name__ in "Researcher" %}
+            {%if p.status.value in "new" or d[1].status.value in "changes_request" %}
+                <a href="{{url_for('researcher.deleteDoc',  pip = p.id, did = d[1].name)}}"> Delete Document </a>  
+                <a href="{{url_for('researcher.editDoc', pip = p.id, did = d[1].name)}}"> Edit Document </a>
+            {% endif%}
+        {% elif d[0] %}
             <a href="{{url_for('evaluator.report',  pip = p.id, did = d[1].name, r = d[0].id)}}"> Edit Report </a>
         {% else %}
             <a href="{{url_for('evaluator.report',  pip = p.id, did = d[1].name, r = d[0].id)}}"> Create Report </a>
+        {% endif %}
+        {% if user.__class__.__name__ in "Evaluator" and d[1].status.value in "default"%}
+            <a href="{{url_for('evaluator.requestC',  pip = p.id, did = d[1].name)}}"> Request changes </a>
         {% endif %}
     {% endfor %}
     {% for sos in q %}

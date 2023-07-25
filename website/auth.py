@@ -40,12 +40,12 @@ def login():
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
+    print("aaa") 
     if request.method == 'POST':
         username = request.form.get('user')
         email = request.form.get('email')
         tipo = request.form.get('tipo')
         pwd = request.form.get('pwd')
-
         user = User.query.filter_by(email=email).first()
         if user:
             flash("Email already exist", category='error')

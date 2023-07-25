@@ -11,14 +11,19 @@
                 <a href="{{url_for('researcher.deleteDoc',  pip = p.id, did = d[1].name)}}"> Delete Document </a>  
                 <a href="{{url_for('researcher.editDoc', pip = p.id, did = d[1].name)}}"> Edit Document </a>
             {% endif%}
+            {% if d[0] %}
+                <a href="{{url_for('researcher.report',  pip = p.id, did = d[1].name, r = d[0].id)}}"> Open Report </a>
+            {%endif%}
         {% elif d[0] %}
+            {% if user.__class__.__name__ in "Evaluator" and d[1].status.value in "default"%}
+                <a href="{{url_for('evaluator.requestC',  pip = p.id, did = d[1].name)}}"> Request changes </a>
+            {% endif %}    
             <a href="{{url_for('evaluator.report',  pip = p.id, did = d[1].name, r = d[0].id)}}"> Edit Report </a>
+        
         {% else %}
             <a href="{{url_for('evaluator.report',  pip = p.id, did = d[1].name, r = d[0].id)}}"> Create Report </a>
         {% endif %}
-        {% if user.__class__.__name__ in "Evaluator" and d[1].status.value in "default"%}
-            <a href="{{url_for('evaluator.requestC',  pip = p.id, did = d[1].name)}}"> Request changes </a>
-        {% endif %}
+        
     {% endfor %}
     {% for sos in q %}
         {{sos.name}} <br>

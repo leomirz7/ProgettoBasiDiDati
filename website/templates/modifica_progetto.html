@@ -28,19 +28,11 @@
             required
         />
     </div>
-
-    <div class="form-group">
-    <label for="status">Project Status</label>
-    <input
-        name="status"
-        type="text"
-        class="form-control"
-        id="status"
-        placeholder="Project Status"
-        value="{{proj.status.value}}"
-        required
-    />
-    </div>
+    {% if proj.status.value in "new" %}
+        <div class="form-group">
+        <label for="status">Inserisi o qualosa del genere, da rivedere</label><br>
+        <input type="checkbox" name="status" class="checkoption" value="pending" > pending <br>
+    {%endif%}
     <br/>
     <div class="form-group">
         <label for="description">Add Project Files</label>

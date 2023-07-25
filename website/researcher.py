@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import *
 
 from website import db
-from website.models import User, Project, Document
+from website.models import Report, User, Project, Document
 
 researcher = Blueprint('researcher', __name__)
 
@@ -32,10 +32,11 @@ def create():
         proj = Project.query.filter_by(description=desc, name=name, idRes=current_user.id).first()
 
         os.makedirs(f"{os.getcwd()}/files/{user.username}/{proj.id}/")
-
-
         for file in files:
-            new_doc = Document(idProj=proj.id, name=file.filename)
+            print("\n\n\n\n\n")
+            print(os.path.splitext(file.filename))
+            print("\n\n\n\n\n")
+            new_doc = Document(idProj=proj.id, name=file.filename,type=os.path.splitext(file.filename)[1])
             db.session.add(new_doc)
 
             print(os.getcwd())
@@ -43,9 +44,41 @@ def create():
 
         db.session.commit()
         flash('Progetto creato', category="success")
-
+        return redirect(url_for('researcher.private'))
     return render_template('crea_progetto.html', user=current_user, user_data=user)
 
+
+@researcher.route('/open',  methods=['GET', 'POST'])
+@login_required
+def open():
+    user = User.query.get(int(current_user.id))
+    p_id = request.args.get('id')
+    proj = Project.query.get(p_id)
+    docs = Document.query.filter_by(idProj=p_id)
+
+    reps = Report.query.filter_by(idDocProj=p_id)
+    """ for r in reps:
+        print(r) """
+    q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
+    """ for d in q:
+        print(d) """
+    if request.method == 'GET':
+        return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q)
+    # if request.method == 'POST':
+    #     print("ciao")
+    return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q)
+
+
+def checkIfEdit(proj, docs):
+    f = False
+    for doc in docs:
+        if(doc.status == "changes_request"):
+            f = True
+            
+    if(f == False):
+        print("asbuba fioi so pending")
+        proj.status = "pending"
+    return "asds"
 @researcher.route('/delete',  methods=['GET', 'POST'])
 @login_required
 def delete():
@@ -59,14 +92,63 @@ def delete():
     shutil.rmtree(f"{os.getcwd()}/files/{user.username}/{proj.id}/")
 
     for doc in docs:
-
         db.session.delete(doc)
 
     db.session.delete(proj)
     db.session.commit()
     flash("Progetto cancellato!", category="success")
-
     return redirect(url_for('researcher.private'))
+
+@researcher.route('/deleteDoc',  methods=['GET', 'POST'])
+@login_required
+def deleteDoc():
+    p_id = request.args.get('pip')
+    d_id = request.args.get('did')
+    proj = Project.query.get(p_id)
+
+    user = User.query.get(int(current_user.id))
+    doc = Document.query.filter_by(idProj=p_id, name = d_id).first()
+    docs = Document.query.filter_by(idProj=p_id)
+    
+    os.remove(f"{os.getcwd()}/files/{user.username}/{proj.id}/{doc.name}")
+    db.session.delete(doc)
+    checkIfEdit(proj, docs)
+    db.session.commit()
+
+    flash("Documento cancellato!", category="success")
+    return redirect(url_for('researcher.private'))
+
+@researcher.route('/editDoc',  methods=['GET', 'POST'])
+@login_required
+def editDoc():
+    p_id = request.args.get('pip')
+    d_id = request.args.get('did')
+    user = User.query.get(int(current_user.id))
+    proj = Project.query.get(p_id)
+    doc = Document.query.filter_by(idProj=p_id, name = d_id).first()
+    docs = Document.query.filter_by(idProj=p_id)
+
+    if request.method == 'GET':
+        return render_template('modifica_documento.html', user=current_user, user_data=user, doc=doc)
+    if request.method == 'POST':
+        files = request.files.getlist('files')
+        files = request.form.getlist('type')
+    
+    os.remove(f"{os.getcwd()}/files/{user.username}/{proj.id}/{doc.name}")
+    db.session.delete(doc)
+    
+    for file in files:
+        new_doc = Document(idProj=proj.id, name=file.filename, type=type)
+        db.session.add(new_doc)
+
+        print(os.getcwd())
+        file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+    
+    checkIfEdit(proj, docs)
+    db.session.commit()
+ 
+    flash("Documento modificato!", category="success")
+    return redirect(url_for('researcher.open',id=p_id))
 
 @researcher.route('/edit',  methods=['GET', 'POST'])
 @login_required
@@ -95,7 +177,8 @@ def edit():
 
         proj.name = name
         proj.description = desc
-        proj.status = status
+        if(status):
+            proj.status = status
 
         db.session.commit()
         flash('Progetto aggiornato', category="success")

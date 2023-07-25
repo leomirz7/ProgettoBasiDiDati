@@ -1,0 +1,35 @@
+{% extends "base.html" %} {% block title %}Edit Project{% endblock %} {% block content
+    %}
+    
+        <form method="POST" enctype="multipart/form-data">
+        <h3 align="center">Document Editing</h3>
+        <div class="form-group">
+            <label for="description">Project Type</label>
+            <input
+                name="type"
+                type="text"
+                class="form-control"
+                id="type"
+                placeholder="Type"
+                value="{{doc.type}}"
+                required
+            />
+        </div>
+        <div class="form-group">
+            <label for="description">Edit Project Files</label>
+            <input
+                name="files"
+                type="file"
+                class="form-control"
+                id="file"
+                placeholder="Files"
+                multiple
+                required
+            />
+        </div><br />
+    
+    
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    
+    {% endblock %}

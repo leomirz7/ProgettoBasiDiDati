@@ -30,6 +30,10 @@ class Status(enum.Enum):
     REJECTED = 'rejected'
     NEW = 'new'
 
+class StatusDoc(enum.Enum):
+    DEFAULT = 'default'
+    CHANGES_REQUEST = 'changes_request'
+
 
 class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -101,7 +105,13 @@ class Report(db.Model):
 class Document(db.Model):
     name = db.Column(db.String(150), primary_key=True)
     type = db.Column(db.String(150))
-
+    status = db.Column(
+        db.Enum(StatusDoc, values_callable=lambda obj: [
+            e.value for e in obj]),
+        nullable=False,
+        default=StatusDoc.DEFAULT.value,
+        server_default=StatusDoc.DEFAULT.value
+    )
 
     idProj = db.Column(db.Integer, db.ForeignKey('project.id'), primary_key=True)
     # report = db.relationship('Report', backref='document')

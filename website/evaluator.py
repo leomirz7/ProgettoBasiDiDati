@@ -26,8 +26,8 @@ def open():
     docs = Document.query.filter_by(idProj=p_id)
 
     reps = Report.query.filter_by(idDocProj=p_id)
-    for r in reps:
-        print(r)
+    """ for r in reps:
+        print(r) """
 
 
     # q = Report.query \
@@ -39,8 +39,8 @@ def open():
 
     q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
 
-    for d in q:
-        print(d)
+    """ for d in q:
+        print(d) """
 
     if request.method == 'GET':
 
@@ -96,3 +96,18 @@ def report():
 
         return redirect(url_for('evaluator.open', id=projId))
 
+@evaluator.route('/requestC', methods=['GET', 'POST'])
+@login_required
+def requestC():
+    projId = request.args.get('pip')
+    proj = Project.query.get(int(projId))
+    docId = request.args.get('did')
+    user = User.query.get(int(proj.idRes))
+    docs = Document.query.filter_by(idProj=projId, name = docId).first()
+    docs.status = "changes_request"
+    proj.status = "changes_request"
+    db.session.commit()
+    return redirect(url_for('evaluator.open', id=projId))
+
+
+        

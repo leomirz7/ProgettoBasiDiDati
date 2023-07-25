@@ -4,30 +4,86 @@
     Nome: {{ p.name }}, Description {{ p.description }}, Status {{ p.status.value }}
     </br>
     Documenti:
-    {% for d in q %}
+    <!-- {% for d in q %}
         <li>Name: <a href="{{url_for('evaluator.download', p = p.id, dName = d[1].name)}}" target=”_blank”>{{ d[1].name }}</a>, status {{ d[1].status.value }}  
         {% if user.__class__.__name__ in "Researcher" %}
-            {%if p.status.value in "new" or d[1].status.value in "changes_request" %}
-                <a href="{{url_for('researcher.deleteDoc',  pip = p.id, did = d[1].name)}}"> Delete Document </a>  
+            {%if p.status.value in "new" or d[1].status.value in "changes_request" and p.status.value not in ["approved","rejected"] %}
+                <a href="{{url_for('researcher.deleteDoc', pip = p.id, did = d[1].name)}}"> Delete Document </a>  
                 <a href="{{url_for('researcher.editDoc', pip = p.id, did = d[1].name)}}"> Edit Document </a>
             {% endif%}
             {% if d[0] %}
-                <a href="{{url_for('researcher.report',  pip = p.id, did = d[1].name, r = d[0].id)}}"> Open Report </a>
+                <a href="{{url_for('researcher.report', pip = p.id, did = d[1].name, r = d[0].id)}}"> Open Report </a>
             {%endif%}
         {% elif d[0] %}
-            {% if user.__class__.__name__ in "Evaluator" and d[1].status.value in "default"%}
-                <a href="{{url_for('evaluator.requestC',  pip = p.id, did = d[1].name)}}"> Request changes </a>
+            {% if user.__class__.__name__ in "Evaluator" and d[1].status.value in "default" and p.status.value not in "approved" and p.status.value not in "rejected"%}
+                <a href="{{url_for('evaluator.requestC', pip = p.id, did = d[1].name)}}"> Request changes </a>
             {% endif %}    
-            <a href="{{url_for('evaluator.report',  pip = p.id, did = d[1].name, r = d[0].id)}}"> Edit Report </a>
-        
+            {% if p.status.value not in "approved" and p.status.value not in "rejected" %}
+                <a href="{{url_for('evaluator.report', pip = p.id, did = d[1].name, r = d[0].id)}}"> Edit Report </a>
+            {% else %}
+                <a href="{{url_for('evaluator.viewReport', pip = p.id, did = d[1].name, r = d[0].id)}}"> Open Report </a>
+            {% endif %} 
         {% else %}
-            <a href="{{url_for('evaluator.report',  pip = p.id, did = d[1].name, r = d[0].id)}}"> Create Report </a>
+            <a href="{{url_for('evaluator.report', pip = p.id, did = d[1].name, r = d[0].id)}}"> Create Report </a>
         {% endif %}
-        
-    {% endfor %}
-    {% for sos in q %}
-        {{sos.name}} <br>
-    {% endfor %}
+    {% endfor %}    -->
+
+    <table class="table">
+        <thead>
+            <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Status</th>
+            <th scope="col">Type</th>
+            <th scope="col"> Evaluation </th>
+            <th scope="col"> Delete </th>
+            <th scope="col"> Edit  </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r,d in q %}
+                <tr>
+                    <td> <a href="{{url_for('evaluator.download', p = p.id, dName = d.name)}}" target=”_blank”>{{ os.path.splitext(d.name)[0] }}</a> </td>
+                    <td> {{ d.status.value }} </td>
+                    <td> {{ d.type }} </td>
+                    {% if user.__class__.__name__ in "Researcher" %}
+                        <td>
+                            {% if r %}
+                                <a href="{{url_for('researcher.report', pip = p.id, did = d.name, r = r.id)}}"> Open Report </a>
+                            {% else %}
+                                not evaluated
+                            {% endif %}
+                        </td>
+
+                        {%if p.status.value in "new" or d.status.value in "changes_request" and p.status.value not in ["approved","rejected"] %}
+                            <td> 
+                                <a href="{{url_for('researcher.deleteDoc', pip = p.id, did = d.name)}}"> Delete Document </a>  
+                
+                            </td>
+                            <td> 
+                                <a href="{{url_for('researcher.editDoc', pip = p.id, did = d.name)}}"> Edit Document </a>
+                            </td>
+                        {% endif %}
+                    {% else %}
+                        <td>
+                            {% if not r %}
+                                <a href="{{url_for('evaluator.report', pip = p.id, did = d.name, r = r.id)}}"> Create Report </a>
+                            {% elif p.status.value not in "approved" and p.status.value not in "rejected" %}
+                                <a href="{{url_for('evaluator.report', pip = p.id, did = d.name, r = r.id)}}"> Edit Report </a>
+                            {% else %}
+                                <a href="{{url_for('evaluator.viewReport', pip = p.id, did = d.name, r = r.id)}}"> Open Report </a>
+                            {% endif %} 
+                        </td>
+                        <td>
+                            {% if r and d.status.value in "default" and p.status.value not in "approved" and p.status.value not in "rejected"%}
+                                <a href="{{url_for('evaluator.requestC', pip = p.id, did = d.name)}}"> Request changes </a>
+                            {% endif %}
+                        </td>
+                    
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 
 

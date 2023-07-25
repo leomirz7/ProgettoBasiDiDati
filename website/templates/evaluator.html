@@ -5,12 +5,35 @@
 
 
     All the projects:
-    <ul>
-    {% for p in projects %}
-    <li>Nome: <a href="{{url_for('evaluator.open', id = p.id)}}"> {{ p.name }}</a>, Description {{ p.description }}, Status {{ p.status.value }}
-    <a href="{{url_for('evaluator.evaluate', id = p.id)}}"> valuta </a>
-    {% endfor %}
-    </ul>
+
+    </br></br>
+
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Description</th>
+            <th scope="col">Status</th>
+            <th scope="col">Valuta</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for p in projects %}
+                <tr>
+                    <td><a href="{{url_for('evaluator.open', id = p.id)}}"> {{ p.name }} </a> </td>
+                    <td>{{ p.description }} </td>
+                    <td>{{ p.status.value }} </td>
+                    <td> 
+                        {% if p.status.value not in "approved" and p.status.value not in "rejected" %}
+                            <a href="{{url_for('evaluator.evaluate', id = p.id)}}"> valuta </a> 
+                        {% else %}
+                            <p style="color: darkgray;"> valuta </p>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
 
 

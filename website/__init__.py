@@ -58,3 +58,4 @@ def create_database(app):
         db.create_all(app=app)
         print('Created Database!')
 
+

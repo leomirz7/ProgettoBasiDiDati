@@ -6,19 +6,23 @@ from flask_login import *
 
 from website import db
 from website.models import Report, User, Project, Document
+from website.util import restrict_user
 
 researcher = Blueprint('researcher', __name__)
 
 @researcher.route('/')
 @login_required
+@restrict_user(current_user, ['Researcher'])
 def private():
     user = User.query.get(int(current_user.id))
     projects = Project.query.filter_by(idRes=current_user.id)
 
     return render_template('researcher.html', user=current_user, user_data=user, projects=projects)
 
+
 @researcher.route('/create',  methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Researcher'])
 def create():
     user = User.query.get(int(current_user.id))
     if request.method == 'POST':
@@ -33,10 +37,10 @@ def create():
 
         os.makedirs(f"{os.getcwd()}/files/{user.username}/{proj.id}/")
         for file in files:
-            print("\n\n\n\n\n")
+            """ print("\n\n\n\n\n")
             print(os.path.splitext(file.filename))
-            print("\n\n\n\n\n")
-            new_doc = Document(idProj=proj.id, name=file.filename,type=os.path.splitext(file.filename)[1])
+            print("\n\n\n\n\n") """
+            new_doc = Document(idProj=proj.id, name=file.filename,type=os.path.splitext(file.filename)[1].replace(".",""))
             db.session.add(new_doc)
 
             print(os.getcwd())
@@ -50,6 +54,7 @@ def create():
 
 @researcher.route('/open',  methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Researcher'])
 def open():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
@@ -63,10 +68,10 @@ def open():
     """ for d in q:
         print(d) """
     if request.method == 'GET':
-        return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q)
+        return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q, os = os)
     # if request.method == 'POST':
     #     print("ciao")
-    return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q)
+    return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q, os = os)
 
 
 def checkIfEdit(proj, docs):
@@ -81,6 +86,7 @@ def checkIfEdit(proj, docs):
 
 @researcher.route('/delete',  methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Researcher'])
 def delete():
     p_id = request.args.get('id')
     print(p_id)
@@ -101,6 +107,7 @@ def delete():
 
 @researcher.route('/deleteDoc',  methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Researcher'])
 def deleteDoc():
     p_id = request.args.get('pip')
     d_id = request.args.get('did')
@@ -120,6 +127,7 @@ def deleteDoc():
 
 @researcher.route('/editDoc',  methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Researcher'])
 def editDoc():
     p_id = request.args.get('pip')
     d_id = request.args.get('did')
@@ -150,6 +158,7 @@ def editDoc():
 
 @researcher.route('/edit',  methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Researcher'])
 def edit():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
@@ -167,11 +176,16 @@ def edit():
         # os.makedirs(f"{os.getcwd()}/files/{user.username}/{p_id}/")
 
 
+
         for file in files:
             if file.filename:
-                new_doc = Document(idProj=proj.id, name=file.filename)
-                db.session.add(new_doc)
-                file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+        
+                if not Document.query.filter_by(idProj=p_id, name = file.filename):
+                    new_doc = Document(idProj=proj.id, name=file.filename)
+                    db.session.add(new_doc)
+                    file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+                else:
+                    flash(f"Il file {file.filename} è già presente", category="error")
 
         proj.name = name
         proj.description = desc
@@ -183,8 +197,10 @@ def edit():
 
     return redirect(url_for('researcher.private'))
 
+
 @researcher.route('/report',  methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Researcher'])
 def report():
     projId = request.args.get('pip')
     proj = Project.query.get(int(projId))
@@ -196,19 +212,3 @@ def report():
 
     if request.method == 'GET':
         return render_template('reportRes.html', user=current_user, user_data=user, p=proj, rep=report)
-
-
-    if request.method == 'POST':
-        score = request.form.get('score')
-        text = request.form.get('text')
-
-        if rep:
-            reps = Report.query.filter_by(id=rep).first()
-            reps.text = text
-            reps.score = score
-        else:
-            new_report = Report(score=score, text=text, idEval=current_user.id, idDocName=docId, idDocProj=projId)
-            db.session.add(new_report)
-        db.session.commit()
-
-        return redirect(url_for('evaluator.open', id=projId))

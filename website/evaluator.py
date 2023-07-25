@@ -6,10 +6,14 @@ from flask_login import *
 from website import db
 from website.models import User, Project, Document, Report
 
+from .util import *
+
 evaluator = Blueprint('evaluator', __name__)
+
 
 @evaluator.route('/')
 @login_required
+@restrict_user(current_user, ['Evaluator'])
 def private():
     user = User.query.get(int(current_user.id))
     projects = Project.query.filter(Project.status != 'new')
@@ -19,6 +23,7 @@ def private():
 
 @evaluator.route('/open',  methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Evaluator'])
 def open():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
@@ -44,7 +49,7 @@ def open():
 
     if request.method == 'GET':
 
-        return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q)
+        return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q, os = os)
     # if request.method == 'POST':
     #     print("ciao")
 
@@ -52,6 +57,7 @@ def open():
 
 @evaluator.route('/download')
 @login_required
+@restrict_user(current_user, ['Evaluator'])
 def download():
     projId = request.args.get('p')
     print(projId)
@@ -65,6 +71,7 @@ def download():
 
 @evaluator.route('/report', methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Evaluator'])
 def report():
     projId = request.args.get('pip')
     proj = Project.query.get(int(projId))
@@ -98,6 +105,7 @@ def report():
 
 @evaluator.route('/requestC', methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Evaluator'])
 def requestC():
     projId = request.args.get('pip')
     proj = Project.query.get(int(projId))
@@ -113,6 +121,7 @@ def requestC():
 
 @evaluator.route('/evaluate',  methods=['GET', 'POST'])
 @login_required
+@restrict_user(current_user, ['Evaluator'])
 def evaluate():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
@@ -140,4 +149,17 @@ def evaluate():
     return redirect(url_for('redirect2.home'))
 
     
-    
+@evaluator.route('/viewReport',  methods=['GET', 'POST'])
+@login_required
+@restrict_user(current_user, ['Evaluator'])
+def viewReport():
+    projId = request.args.get('pip')
+    proj = Project.query.get(int(projId))
+    docId = request.args.get('did')
+    user = User.query.get(int(proj.idRes))
+    rep = request.args.get('r')
+
+    report = Report.query.get(rep)
+
+    if request.method == 'GET':
+        return render_template('reportRes.html', user=current_user, user_data=user, p=proj, rep=report)

@@ -137,7 +137,7 @@ def editDoc():
     os.remove(f"{os.getcwd()}/files/{user.username}/{proj.id}/{doc.name}")
     db.session.delete(doc)
     
-    new_doc = Document(idProj=proj.id, name=file.filename, type=type)
+    new_doc = Document(idProj=proj.id, name=file.filename, type=type, status="default")
     db.session.add(new_doc)
     print(os.getcwd())
     file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
@@ -182,3 +182,33 @@ def edit():
         flash('Progetto aggiornato', category="success")
 
     return redirect(url_for('researcher.private'))
+
+@researcher.route('/report',  methods=['GET', 'POST'])
+@login_required
+def report():
+    projId = request.args.get('pip')
+    proj = Project.query.get(int(projId))
+    docId = request.args.get('did')
+    user = User.query.get(int(proj.idRes))
+    rep = request.args.get('r')
+
+    report = Report.query.get(rep)
+
+    if request.method == 'GET':
+        return render_template('reportRes.html', user=current_user, user_data=user, p=proj, rep=report)
+
+
+    if request.method == 'POST':
+        score = request.form.get('score')
+        text = request.form.get('text')
+
+        if rep:
+            reps = Report.query.filter_by(id=rep).first()
+            reps.text = text
+            reps.score = score
+        else:
+            new_report = Report(score=score, text=text, idEval=current_user.id, idDocName=docId, idDocProj=projId)
+            db.session.add(new_report)
+        db.session.commit()
+
+        return redirect(url_for('evaluator.open', id=projId))

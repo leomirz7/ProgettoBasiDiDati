@@ -75,10 +75,10 @@ def report():
 
     rep = request.args.get('r')
 
-    sbab = Report.query.get(rep)
+    report = Report.query.get(rep)
 
     if request.method == 'GET':
-        return render_template('report.html', user=current_user, user_data=user, p=proj, rep=sbab)
+        return render_template('report.html', user=current_user, user_data=user, p=proj, rep=report)
 
 
     if request.method == 'POST':

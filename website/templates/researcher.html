@@ -1,24 +1,40 @@
 {% extends "base.html" %} {% block title %}Researcher Home{% endblock %} {% block content
 %}
 
-    Welcome to the web app, {{ user_data.username }}! </br>
+    <h3> Welcome to the web app, {{ user_data.username }}!</h3>
 
     <a href="/researcher/create"> Clicca qui per aggiungere un progetto </a> </br>
 
-    Your projects:
-    <ul>
-    {% for p in projects %}
-        <li>Nome:  <a href="{{url_for('researcher.open', id = p.id)}}"> {{p.name}} </a>, Description {{ p.description }}, Status {{ p.status.value }} 
-            {%if p.status.value in "new"%}
-                <a href="{{url_for('researcher.delete', id = p.id)}}"> delete </a>
-            {%endif%}
-            {%if p.status.value in "new" or p.status.value in "changes_request" %}
-                <a href="{{url_for('researcher.edit', id = p.id)}}"> edit </a>
-            {%endif%}
-        </li>
-    {% endfor %}
-    </ul>
- 
 
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Description</th>
+            <th scope="col">Status</th>
+            <th scope="col">Delete</th>
+            <th scope="col">Edit</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for p in projects %}
+                <tr>
+                    <td><a href="{{url_for('researcher.open', id = p.id)}}"> {{p.name}} </a></td>
+                    <td>{{ p.description }}</td>
+                    <td>{{ p.status.value }}</td>
+                    <td>
+                        {%if p.status.value in "new"%}
+                            <a href="{{url_for('researcher.delete', id = p.id)}}"> delete </a>
+                        {%endif%}
+                    </td>
+                    <td>
+                        {%if p.status.value in "new" or p.status.value in "changes_request" %}
+                            <a href="{{url_for('researcher.edit', id = p.id)}}"> edit </a>
+                        {%endif%}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+      </table>
 
 {% endblock %}

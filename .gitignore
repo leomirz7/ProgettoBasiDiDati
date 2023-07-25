@@ -1,1 +1,6 @@
-website/__pycache__/auth.cpython-310.pyc
+website/__pycache__/
+website/__pycache__/
+__pycache__
+.idea
+.venv
+venv

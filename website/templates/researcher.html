@@ -9,7 +9,9 @@
     <ul>
     {% for p in projects %}
         <li>Nome:  <a href="{{url_for('researcher.open', id = p.id)}}"> {{p.name}} </a>, Description {{ p.description }}, Status {{ p.status.value }} 
-            <a href="{{url_for('researcher.delete', id = p.id)}}"> delete </a>
+            {%if p.status.value in "new"%}
+                <a href="{{url_for('researcher.delete', id = p.id)}}"> delete </a>
+            {%endif%}
             {%if p.status.value in "new" or p.status.value in "changes_request" %}
                 <a href="{{url_for('researcher.edit', id = p.id)}}"> edit </a>
             {%endif%}

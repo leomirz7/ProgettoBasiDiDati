@@ -110,4 +110,34 @@ def requestC():
     return redirect(url_for('evaluator.open', id=projId))
 
 
-        
+
+@evaluator.route('/evaluate',  methods=['GET', 'POST'])
+@login_required
+def evaluate():
+    user = User.query.get(int(current_user.id))
+    p_id = request.args.get('id')
+    proj = Project.query.get(p_id)
+    docs = Document.query.filter_by(idProj=p_id)
+
+    reps = Report.query.filter_by(idDocProj=p_id)
+ 
+    q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
+    media = 0
+    i = 0
+    for tupla in q:
+        if(tupla[0] == None):
+            flash("Non tutti i documenti sono stati valutati", category='error')
+            return redirect(url_for('redirect2.home'))
+        media += tupla[0].score 
+        i += 1
+    if(media/i >= 18):
+        proj.status = "approved"
+        flash("Progetto approvato", category='success')
+    else:
+        proj.status = "rejected"
+        flash("Progetto rifiutato", category='error')
+    db.session.commit()
+    return redirect(url_for('redirect2.home'))
+
+    
+    

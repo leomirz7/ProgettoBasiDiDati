@@ -56,7 +56,7 @@ def register():
         elif len(pwd) < 4:
             flash('Password must be at least 4 characters.', category='error')
         elif tipo != 'Researcher' and tipo != 'Evaluator':
-            flash('Tipo sbagliato', category='error')
+            flash('Tipo non inserito', category='error')
         else:
             new_user = User(username=username, email=email, pwd=generate_password_hash(pwd, method='scrypt'))
             db.session.add(new_user)

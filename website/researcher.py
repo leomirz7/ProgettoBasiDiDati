@@ -74,11 +74,11 @@ def checkIfEdit(proj, docs):
     for doc in docs:
         if(doc.status == "changes_request"):
             f = True
-            
-    if(f == False):
-        print("asbuba fioi so pending")
+    if(f == False and proj.status.value != "new"):
         proj.status = "pending"
     return "asds"
+
+
 @researcher.route('/delete',  methods=['GET', 'POST'])
 @login_required
 def delete():
@@ -131,18 +131,16 @@ def editDoc():
     if request.method == 'GET':
         return render_template('modifica_documento.html', user=current_user, user_data=user, doc=doc)
     if request.method == 'POST':
-        files = request.files.getlist('files')
-        files = request.form.getlist('type')
+        file = request.files.get('files')
+        type = request.form.get('type')
     
     os.remove(f"{os.getcwd()}/files/{user.username}/{proj.id}/{doc.name}")
     db.session.delete(doc)
     
-    for file in files:
-        new_doc = Document(idProj=proj.id, name=file.filename, type=type)
-        db.session.add(new_doc)
-
-        print(os.getcwd())
-        file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+    new_doc = Document(idProj=proj.id, name=file.filename, type=type)
+    db.session.add(new_doc)
+    print(os.getcwd())
+    file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
     
     checkIfEdit(proj, docs)
     db.session.commit()

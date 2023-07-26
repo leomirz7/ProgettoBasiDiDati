@@ -31,51 +31,91 @@
     <table class="table">
         <thead>
             <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Status</th>
-            <th scope="col">Type</th>
-            <th scope="col"> Evaluation </th>
-            <th scope="col"> Delete </th>
-            <th scope="col"> Edit  </th>
+                <th scope="col">Name</th>
+                <th scope="col">Status</th>
+                <th scope="col">Type</th>
+                <th scope="col"> Evaluation </th>    
+                {% if user.__class__.__name__ in "Researcher"%}
+                    <th scope="col"> Delete </th>
+                    <th scope="col"> Edit </th>
+                {% else %}
+                    <th scope="col"> Request changes </th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
             {% for r,d in q %}
                 <tr>
-                    <td> <a href="{{url_for('evaluator.download', p = p.id, dName = d.name)}}" target=”_blank”>{{ os.path.splitext(d.name)[0] }}</a> </td>
-                    <td> {{ d.status.value }} </td>
+                    <td> 
+                        
+                        <a href="{{url_for('evaluator.download', p = p.id, dName = d.name)}}" target=”_blank”>{{ os.path.splitext(d.name)[0] }}</a> 
+                    </td>
+                    <td> {{ d.status.value }} 
+
+                    </td>
                     <td> {{ d.type }} </td>
                     {% if user.__class__.__name__ in "Researcher" %}
                         <td>
                             {% if r %}
-                                <a href="{{url_for('researcher.report', pip = p.id, did = d.name, r = r.id)}}"> Open Report </a>
+                                <a href="{{url_for('researcher.report', pip = p.id, did = d.name, r = r.id)}}"> 
+                                    <span class="material-symbols-outlined">
+                                        file_open
+                                    </span>
+                                </a>
                             {% else %}
-                                not evaluated
+                                <span class="material-symbols-outlined">
+                                    file_open
+                                </span>
                             {% endif %}
                         </td>
 
-                        {%if p.status.value in "new" or d.status.value in "changes_request" and p.status.value not in ["approved","rejected"] %}
-                            <td> 
-                                <a href="{{url_for('researcher.deleteDoc', pip = p.id, did = d.name)}}"> Delete Document </a>  
-                
-                            </td>
-                            <td> 
-                                <a href="{{url_for('researcher.editDoc', pip = p.id, did = d.name)}}"> Edit Document </a>
-                            </td>
-                        {% endif %}
+                        <td> 
+                            {%if p.status.value in "new" or d.status.value in "changes_request" and p.status.value not in ["approved","rejected"] %}
+                                <a href="{{url_for('researcher.deleteDoc', pip = p.id, did = d.name)}}">  
+                                    <span class="material-symbols-outlined">
+                                        delete
+                                    </span>
+                                </a>  
+                            {% endif %}
+                        </td>
+                        <td> 
+                            {%if p.status.value in "new" or d.status.value in "changes_request" and p.status.value not in ["approved","rejected"] %}
+                                <a href="{{url_for('researcher.editDoc', pip = p.id, did = d.name)}}"> 
+                                    <span class="material-symbols-outlined">
+                                        edit
+                                    </span>
+                                </a>
+                            {% endif %}
+                        </td>
                     {% else %}
                         <td>
                             {% if not r %}
-                                <a href="{{url_for('evaluator.report', pip = p.id, did = d.name, r = r.id)}}"> Create Report </a>
+                                <a href="{{url_for('evaluator.report', pip = p.id, did = d.name, r = r.id)}}"> 
+                                    <span class="material-symbols-outlined">
+                                        add_circle
+                                    </span> 
+                                </a>
                             {% elif p.status.value not in "approved" and p.status.value not in "rejected" %}
-                                <a href="{{url_for('evaluator.report', pip = p.id, did = d.name, r = r.id)}}"> Edit Report </a>
+                                <a href="{{url_for('evaluator.report', pip = p.id, did = d.name, r = r.id)}}"> 
+                                    <span class="material-symbols-outlined">
+                                        edit_document
+                                    </span> 
+                                </a>
                             {% else %}
-                                <a href="{{url_for('evaluator.viewReport', pip = p.id, did = d.name, r = r.id)}}"> Open Report </a>
+                                <a href="{{url_for('evaluator.viewReport', pip = p.id, did = d.name, r = r.id)}}">  
+                                    <span class="material-symbols-outlined">
+                                        file_open
+                                    </span> 
+                                </a>
                             {% endif %} 
                         </td>
                         <td>
                             {% if r and d.status.value in "default" and p.status.value not in "approved" and p.status.value not in "rejected"%}
-                                <a href="{{url_for('evaluator.requestC', pip = p.id, did = d.name)}}"> Request changes </a>
+                                <a href="{{url_for('evaluator.requestC', pip = p.id, did = d.name)}}">
+                                    <span class="material-symbols-outlined">
+                                        published_with_changes
+                                    </span>
+                                </a>
                             {% endif %}
                         </td>
                     

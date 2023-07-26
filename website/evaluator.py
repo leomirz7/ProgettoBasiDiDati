@@ -1,3 +1,4 @@
+from datetime import date
 import os
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory, send_file, session
@@ -16,7 +17,7 @@ evaluator = Blueprint('evaluator', __name__)
 @restrict_user(current_user, ['Evaluator'])
 def private():
     user = User.query.get(int(current_user.id))
-    projects = Project.query.filter(Project.status != 'new')
+    projects = Project.query.filter(Project.status != 'new' and Project.endDate >= date.today())
 
     return render_template('evaluator.html', user=current_user, user_data=user, projects=projects)
 
@@ -55,9 +56,10 @@ def open():
 
     return redirect(url_for('evaluator.open'))
 
+
 @evaluator.route('/download')
 @login_required
-@restrict_user(current_user, ['Evaluator'])
+@restrict_user(current_user, ['Evaluator', 'Researcher'])
 def download():
     projId = request.args.get('p')
     print(projId)
@@ -68,6 +70,7 @@ def download():
 
     uploads = f"{os.getcwd()}/files/{user.username}/{proj.id}/{filename}"
     return send_file(uploads)
+
 
 @evaluator.route('/report', methods=['GET', 'POST'])
 @login_required

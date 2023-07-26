@@ -39,6 +39,7 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
     description = db.Column(db.String(1000))
+    endDate = db.Column(db.Date())
     status = db.Column(
         db.Enum(Status, values_callable=lambda obj: [
             e.value for e in obj]),

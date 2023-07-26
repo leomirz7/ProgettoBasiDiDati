@@ -7,38 +7,71 @@
 
     </br></br>
 
-    <a href="/researcher/create"> Clicca qui per aggiungere un progetto </a> </br></br></br>
+    <a href="/researcher/create"> 
+        <button class="btn add btn-primary"> 
+            <span class="material-symbols-outlined">
+                add_circle
+            </span> 
+            Add a new project  
+        </button> 
+    </a> 
+    
+    </br></br></br>
+    
+
+    {%if projects %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Status</th>
+                <th scope="col">Delete</th>
+                <th scope="col">Edit</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for p in projects %}
+                    <tr>
+                        <td><a href="{{url_for('researcher.open', id = p.id)}}"> {{p.name}} </a></td>
+                        <td>{{ p.description }}</td>
+                        <td >
+                            {%if p.status.value in "approved"%}
+                                <span style="color:lightgreen;"> Approved </span>
+                                <span style="color:lightgreen;" class="material-symbols-outlined approved">
+                                    done
+                                </span>
+                                
+                            {%else%}
+                                {{ p.status.value }}
+                            {%endif%}
+                        </td>
+                        <td>
+                            {%if p.status.value in "new"%}
+                                <a href="{{url_for('researcher.delete', id = p.id)}}"> 
+                                    <span class="material-symbols-outlined">
+                                    delete
+                                    </span>
+                                </a>
+                            {%endif%}
+                        </td>
+                        <td>
+                            {%if p.status.value in "new" or p.status.value in "changes_request" %}
+                                <a href="{{url_for('researcher.edit', id = p.id)}}"> 
+                                    <span class="material-symbols-outlined">
+                                        edit
+                                    </span>
+                                </a>
+                            {%endif%}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <h5>You don't have any projects</h5>
+    {%endif%}
 
 
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Description</th>
-            <th scope="col">Status</th>
-            <th scope="col">Delete</th>
-            <th scope="col">Edit</th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for p in projects %}
-                <tr>
-                    <td><a href="{{url_for('researcher.open', id = p.id)}}"> {{p.name}} </a></td>
-                    <td>{{ p.description }}</td>
-                    <td>{{ p.status.value }}</td>
-                    <td>
-                        {%if p.status.value in "new"%}
-                            <a href="{{url_for('researcher.delete', id = p.id)}}"> delete </a>
-                        {%endif%}
-                    </td>
-                    <td>
-                        {%if p.status.value in "new" or p.status.value in "changes_request" %}
-                            <a href="{{url_for('researcher.edit', id = p.id)}}"> edit </a>
-                        {%endif%}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-      </table>
 
 {% endblock %}

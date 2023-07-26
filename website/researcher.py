@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 import os
 import shutil
 
@@ -5,7 +6,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import *
 
 from website import db
-from website.models import Report, User, Project, Document
+from website.models import Report, Status, User, Project, Document
 from website.util import restrict_user
 
 researcher = Blueprint('researcher', __name__)
@@ -15,7 +16,14 @@ researcher = Blueprint('researcher', __name__)
 @restrict_user(current_user, ['Researcher'])
 def private():
     user = User.query.get(int(current_user.id))
-    projects = Project.query.filter_by(idRes=current_user.id)
+    projects = Project.query.filter_by(idRes=current_user.id).all()
+    for p in projects:
+        if p.endDate and p.endDate < date.today():
+            """ print(p.status) """
+            p.status = "new"
+            """ print(p.status) """
+
+    db.session.commit()
 
     return render_template('researcher.html', user=current_user, user_data=user, projects=projects)
 
@@ -29,6 +37,8 @@ def create():
         name = request.form.get('name')
         desc = request.form.get('description')
         files = request.files.getlist('files')
+
+        
 
         new_proj = Project(description=desc, name=name, idRes=current_user.id)
         db.session.add(new_proj)
@@ -125,6 +135,7 @@ def deleteDoc():
     flash("Documento cancellato!", category="success")
     return redirect(url_for('researcher.private'))
 
+
 @researcher.route('/editDoc',  methods=['GET', 'POST'])
 @login_required
 @restrict_user(current_user, ['Researcher'])
@@ -135,6 +146,8 @@ def editDoc():
     proj = Project.query.get(p_id)
     doc = Document.query.filter_by(idProj=p_id, name = d_id).first()
     docs = Document.query.filter_by(idProj=p_id)
+    rep = Report.query.filter_by(idDocName=d_id, idDocProj=p_id).first()
+
 
     if request.method == 'GET':
         return render_template('modifica_documento.html', user=current_user, user_data=user, doc=doc)
@@ -144,6 +157,7 @@ def editDoc():
     
     os.remove(f"{os.getcwd()}/files/{user.username}/{proj.id}/{doc.name}")
     db.session.delete(doc)
+    db.session.delete(rep)
     
     new_doc = Document(idProj=proj.id, name=file.filename, type=type, status="default")
     db.session.add(new_doc)
@@ -156,6 +170,7 @@ def editDoc():
     flash("Documento modificato!", category="success")
     return redirect(url_for('researcher.open',id=p_id))
 
+
 @researcher.route('/edit',  methods=['GET', 'POST'])
 @login_required
 @restrict_user(current_user, ['Researcher'])
@@ -165,6 +180,9 @@ def edit():
     proj = Project.query.get(p_id)
     docs = Document.query.filter_by(idProj=p_id)
 
+    print(proj.status)
+
+
     if request.method == 'GET':
         return render_template('modifica_progetto.html', user=current_user, user_data=user, proj=proj, docs=docs)
     if request.method == 'POST':
@@ -172,6 +190,8 @@ def edit():
         desc = request.form.get('description')
         status = request.form.get('status')
         files = request.files.getlist('files')
+        
+
 
         # os.makedirs(f"{os.getcwd()}/files/{user.username}/{p_id}/")
 
@@ -179,18 +199,21 @@ def edit():
 
         for file in files:
             if file.filename:
-        
-                if not Document.query.filter_by(idProj=p_id, name = file.filename):
+                doc = Document.query.filter_by(idProj=p_id, name = file.filename).first()
+                if not doc:
                     new_doc = Document(idProj=proj.id, name=file.filename)
                     db.session.add(new_doc)
                     file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
                 else:
+                    print(doc.name)
                     flash(f"Il file {file.filename} è già presente", category="error")
 
         proj.name = name
         proj.description = desc
+        print(proj.status)
         if(status):
             proj.status = status
+            proj.endDate = date.today() + timedelta(days=30)
 
         db.session.commit()
         flash('Progetto aggiornato', category="success")

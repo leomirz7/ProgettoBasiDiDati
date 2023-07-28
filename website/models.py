@@ -36,7 +36,7 @@ class StatusDoc(enum.Enum):
 
 
 class Project(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
     name = db.Column(db.String(30))
     description = db.Column(db.String(1000))
     endDate = db.Column(db.Date())

@@ -29,11 +29,6 @@
         />
     </div>
 
-    {% if proj.status.value in "new" %}
-        <div class="form-group">
-        <label for="status">Inserisi o qualosa del genere, da rivedere</label><br>
-        <input type="checkbox" name="status" class="checkoption" value="pending" > pending <br>
-    {%endif%}
     <br/>
 
     <div class="form-group">
@@ -46,7 +41,21 @@
 
     <br>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn add btn-primary"> 
+        <span class="material-symbols-outlined">
+            save
+        </span> 
+        <span> Save </span> 
+    </button> 
+
+    {% if proj.status.value in "new" %}
+        <button type="submit" name="status" value="pending" class="btn add btn-primary"> 
+            <span class="material-symbols-outlined">
+                publish
+            </span> 
+            <span> Publish for evaluation </span> 
+        </button> 
+    {%endif%}
 </form>
 
 {% endblock %}

@@ -1,7 +1,7 @@
 from datetime import date
 import os
 
-from flask import Blueprint, render_template, request, flash, redirect, url_for, send_from_directory, send_file, session
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import *
 
 from website import db
@@ -29,35 +29,13 @@ def open():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
     proj = Project.query.get(p_id)
-    docs = Document.query.filter_by(idProj=p_id)
-
-    reps = Report.query.filter_by(idDocProj=p_id)
-    """ for r in reps:
-        print(r) """
-
-
-    # q = Report.query \
-    #     .join(Document, Document.name == Report.idDocName) \
-    #     .filter(Document.idProj == p_id, Document.idProj == Report.idDocProj).all()
-
-    # q = db.session.query(Document, Report).filter(Document.name == Report.idDocName and Document.idProj == Report.idDocProj and Document.idProj == p_id).all()
-
 
     q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
 
-    """ for d in q:
-        print(d) """
-
     if request.method == 'GET':
-
         return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q, os = os)
-    # if request.method == 'POST':
-    #     print("ciao")
 
     return redirect(url_for('evaluator.open'))
-
-
-
 
 
 @evaluator.route('/report', methods=['GET', 'POST'])
@@ -78,7 +56,6 @@ def report():
     if request.method == 'GET':
         return render_template('report.html', user=current_user, user_data=user, p=proj, rep=report)
 
-
     if request.method == 'POST':
         score = request.form.get('score')
         text = request.form.get('text')
@@ -94,6 +71,7 @@ def report():
 
         return redirect(url_for('evaluator.open', id=projId))
 
+
 @evaluator.route('/requestC', methods=['GET', 'POST'])
 @login_required
 @restrict_user(current_user, ['Evaluator'])
@@ -101,30 +79,27 @@ def requestC():
     projId = request.args.get('pip')
     proj = Project.query.get(int(projId))
     docId = request.args.get('did')
-    user = User.query.get(int(proj.idRes))
     docs = Document.query.filter_by(idProj=projId, name = docId).first()
+
     docs.status = "changes_request"
     proj.status = "changes_request"
+
     db.session.commit()
     return redirect(url_for('evaluator.open', id=projId))
 
 
-
-@evaluator.route('/evaluate',  methods=['GET', 'POST'])
+@evaluator.route('/evaluate', methods=['GET', 'POST'])
 @login_required
 @restrict_user(current_user, ['Evaluator'])
 def evaluate():
-    user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
     proj = Project.query.get(p_id)
-    docs = Document.query.filter_by(idProj=p_id)
 
-    reps = Report.query.filter_by(idDocProj=p_id)
- 
     q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
     media = 0
     i = 0
-    for r,d in q:
+
+    for r,_ in q:
         if(r == None or proj.status.value == "changes_request"):
             flash("Non tutti i documenti sono stati valutati", category='error')
             return redirect(url_for('redirect2.home'))
@@ -138,4 +113,3 @@ def evaluate():
         flash("Progetto rifiutato", category='error')
     db.session.commit()
     return redirect(url_for('redirect2.home'))
-

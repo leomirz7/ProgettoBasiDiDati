@@ -3,7 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    
+
+    <link rel="stylesheet" type="text/css" href= "{{url_for('static',filename='style.css') }}"  />
+
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -18,11 +21,10 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,200" />
 
-    
 
-<!--     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
-
+    <link rel="icon" type="image/x-icon" href="{{url_for('static',filename='icon.png') }}">
     
+  
 
     <title>{% block title %}Home{% endblock %}</title>
   </head>
@@ -56,14 +58,14 @@
     <div class="alert alert-danger alter-dismissable fade show" role="alert">
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
-        <span aria-hidden="true">&times;</span>
+        <div aria-hidden="true">&times;</div>
       </button>
     </div>
     {% else %}
     <div class="alert alert-success alter-dismissable fade show" role="alert">
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
-        <span aria-hidden="true">&times;</span>
+        <div aria-hidden="true">&times;</div>
       </button>
     </div>
     {% endif %} {% endfor %} {% endif %} {% endwith %}
@@ -84,6 +86,7 @@
       integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
       crossorigin="anonymous"
     ></script>
+    <script src="extensions/resizable/bootstrap-table-resizable.js"></script>
 
 <!--{% block javascript %}-->
 <!--    <script type="text/javascript">-->

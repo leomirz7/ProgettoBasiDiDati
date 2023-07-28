@@ -1,0 +1,133 @@
+1
+SELECT co.lifeexpectancy
+FROM city c JOIN country co ON c.countrycode = co.code
+WHERE c.name = 'Savannakhet';
+
+2
+SELECT count(DISTINCT cl.language)
+FROM country c JOIN countrylanguage cl ON c.code = cl.countrycode 
+WHERE percentage > 50 and c.continent = 'Europe';
+
+3
+SELECT city.name
+FROM city JOIN country ON country.capital = city.id
+WHERE country.name = (
+	SELECT country.name
+	FROM city JOIN country ON country.code = city.countrycode
+	WHERE city.name = 'Manizales');
+
+4
+SELECT count(co.name)
+FROM country co
+WHERE co.capital is null;
+
+5) Trovare il nome della nazione che ha raggiunto per primo l’indipendenza.
+SELECT co.name
+FROM country co
+WHERE co.indepyear = (
+    SELECT min(co.indepyear)
+    FROM country co );
+
+6) Trovare il nome delle nazioni africane in cui si parla sia inglese che francese come lingue ufficiali
+SELECT c.name
+FROM country c JOIN countrylanguage cl ON cl.countrycode = c.code
+WHERE c.continent = 'Africa' AND cl.language IN ('English', 'French') AND cl.isofficial = true
+GROUP BY c.name
+HAVING COUNT(cl.language) = 2;
+
+7) Contare il numero di nazioni che hanno una citta' il cui nome contiene 'City'
+SELECT count(DISTINCT co.name)
+FROM country co JOIN city c ON co.code = c.countrycode
+WHERE c.name LIKE '%City%';
+
+8) Numero di nazioni per cui si conosce SOLO la capitale come città
+SELECT count(*)
+FROM country co JOIN city c ON co.capital = c.id
+WHERE co.name in (
+    SELECT co.name
+    FROM country co JOIN city c ON co.code = c.countrycode
+    GROUP BY co.name
+    HAVING count(c.name) = 1);
+
+9) Numero di nazioni in cui l'aspettativa di vita e' superiore alla media del continente a cui appartengono
+SELECT count(c1.name)
+FROM country c1
+WHERE c1.lifeexpectancy > (
+    SELECT avg(c2.lifeexpectancy)
+    FROM country c2
+    WHERE c1.continent = c2.continent);
+
+10) Superficie delle nazioni che appartengono a un continente che non ha città
+SELECT sum(co.surfacearea)
+FROM country co
+WHERE co.continent NOT IN(
+    SELECT co.continent
+    FROM country co JOIN city c ON co.code = c.countrycode);
+
+11) Trovare i nomi dei paesi in cui si parlano piu' di 5 lingue ma solo 1 e' ufficiale
+SELECT co.name, count(cl.language)
+FROM country co JOIN countrylanguage cl ON co.code = cl.countrycode
+GROUP BY co.name
+HAVING count(cl.language) > 5 AND 1 = (
+    SELECT count(cl2.language)
+    FROM country co2 JOIN countrylanguage cl2 ON co2.code = cl2.countrycode
+    WHERE cl2.isofficial = true AND co.name = co2.name);
+
+13) La regione del continente africano con più persone che abitano nelle città
+SELECT co.region 
+FROM country co JOIN city c ON co.code = c.countrycode 
+WHERE co.continent = 'Africa'
+GROUP BY co.region
+ORDER BY sum(c.population) DESC
+LIMIT 1;
+
+
+14) Per ogni lingua, nome della lingua, numero di nazioni e numero di continenti in cui tale lingua si parla come lingua ufficiale e numero di nazioni e numero di continenti in cui si parla come non ufficiale. Il risultato deve essere in ordine decrescente per il numero di nazioni ufficiali
+SELECT language, 
+    COUNT(DISTINCT c.code) AS "Numero di nazioni ufficiali",
+    COUNT(DISTINCT c.continent) AS "Numero di continenti ufficiali",
+    COUNT(DISTINCT c2.code) AS "Numero di nazioni non ufficiali",
+    COUNT(DISTINCT c2.continent) AS "Numero di continenti non ufficiali"
+FROM countrylanguage cl
+FULL JOIN country c ON c.code = cl.countrycode AND cl.isofficial = 'T'
+FULL JOIN country c2 ON c2.code = cl.countrycode AND cl.isofficial = 'F'
+WHERE cl.language IS NOT NULL
+GROUP BY language
+ORDER BY "Numero di nazioni ufficiali" DESC;
+
+SELECT a.language, aa, bb, cc, dd
+FROM (
+SELECT cl.language, COUNT(DISTINCT c.code) AS "aa", COUNT(DISTINCT c.continent) AS "bb"
+FROM countrylanguage cl FULL JOIN country c ON c.code = cl.countrycode AND cl.isofficial = 'T'
+GROUP BY cl.language) as a JOIN ( 
+SELECT cl.language, COUNT(DISTINCT c.code) AS "cc", COUNT(DISTINCT c.continent) AS "dd"
+FROM countrylanguage cl FULL JOIN country c ON c.code = cl.countrycode AND cl.isofficial = 'F'
+GROUP BY cl.language) as b ON a.language = b.language
+ORDER BY aa DESC;
+
+15) Trovare la media delle popolazioni massime delle città presenti nei vari continenti
+SELECT avg(max)
+FROM (
+	SELECT co.continent, max(c.population)
+	FROM city c JOIN country co ON c.countrycode = co.code
+	GROUP BY co.continent) as b;
+
+
+
+
+
+
+
+
+
+
+
+SELECT *
+FROM (
+SELECT c.language, COUNT(DISTINCT c.code) AS "Numero di nazioni ufficiali", COUNT(DISTINCT c.continent) AS "Numero di continenti ufficiali",
+FROM countrylanguage cl JOIN country c ON c.code = cl.countrycode AND cl.isofficial = 'T'
+GROUP BY c.language) as a JOIN ( 
+SELECT c.language, COUNT(DISTINCT c.code) AS "Numero di nazioni ufficiali", COUNT(DISTINCT c.continent) AS "Numero di continenti ufficiali",
+FROM countrylanguage cl JOIN country c ON c.code = cl.countrycode AND cl.isofficial = 'F'
+GROUP BY c.language) as b;
+

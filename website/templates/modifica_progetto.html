@@ -35,18 +35,16 @@
         <input type="checkbox" name="status" class="checkoption" value="pending" > pending <br>
     {%endif%}
     <br/>
-    <div class="form-group">
-        <label for="description">Add Project Files</label>
-        <input
-            name="files"
-            type="file"
-            class="form-control"
-            id="file"
-            placeholder="Files"
-            multiple
-        />
-    </div><br />
 
+    <div class="form-group">
+        <label for="images" class="drop-container" id="dropcontainer">
+            <span class="drop-title">Drop files here</span>
+            or
+            <input name="files" type="file" id="file" multiple>
+        </label>
+    </div>
+
+    <br>
 
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>

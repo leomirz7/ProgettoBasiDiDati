@@ -1,6 +1,5 @@
 {% extends "base.html" %} {% block title %}Researcher Home{% endblock %} {% block content
 %}
-    
     </br></br>
 
     <h3> Welcome to the web app, {{ user_data.username }}!</h3>
@@ -12,7 +11,7 @@
             <span class="material-symbols-outlined">
                 add_circle
             </span> 
-            Add a new project  
+            <span> Add a new project  </span> 
         </button> 
     </a> 
     
@@ -20,14 +19,14 @@
     
 
     {%if projects %}
-        <table class="table">
+        <table class="table table-hover table-bordered">
             <thead>
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">Description</th>
                 <th scope="col">Status</th>
-                <th scope="col">Delete</th>
-                <th scope="col">Edit</th>
+                <th class="butt" scope="col">Delete</th>
+                <th class="butt" scope="col">Edit</th>
             </tr>
             </thead>
             <tbody>
@@ -35,27 +34,49 @@
                     <tr>
                         <td><a href="{{url_for('researcher.open', id = p.id)}}"> {{p.name}} </a></td>
                         <td>{{ p.description }}</td>
-                        <td >
+                        <td class="parent">
                             {%if p.status.value in "approved"%}
-                                <span style="color:lightgreen;"> Approved </span>
-                                <span style="color:lightgreen;" class="material-symbols-outlined approved">
+                                <span class="material-symbols-outlined approved">
                                     done
                                 </span>
+                                <span class="approved" > Approved </span>
+                                
+                            {%elif p.status.value in "rejected"%}
+                                <span class="material-symbols-outlined rejected">
+                                    close
+                                </span>
+                                <span class="rejected"> Rejected </span>
+                                
+                            {%elif p.status.value in "changes_request"%}
+                                <span class="material-symbols-outlined changes_request">
+                                    sync_problem
+                                </span>
+                                <span class="changes_request"> Changes Requested </span>
+                                
+                            {%elif p.status.value in "new"%}
+                                <span s class="material-symbols-outlined new">
+                                    draft
+                                </span>
+                                <span class="new"> Draft </span>
                                 
                             {%else%}
-                                {{ p.status.value }}
+                                <span class="material-symbols-outlined pending">
+                                    hourglass_empty
+                                </span>
+                                <span class="pending"> Pending </span>
+                                
                             {%endif%}
                         </td>
-                        <td>
+                        <td class="butt">
                             {%if p.status.value in "new"%}
                                 <a href="{{url_for('researcher.delete', id = p.id)}}"> 
-                                    <span class="material-symbols-outlined">
+                                    <span  class="material-symbols-outlined delete">
                                     delete
                                     </span>
                                 </a>
                             {%endif%}
                         </td>
-                        <td>
+                        <td class="butt">
                             {%if p.status.value in "new" or p.status.value in "changes_request" %}
                                 <a href="{{url_for('researcher.edit', id = p.id)}}"> 
                                     <span class="material-symbols-outlined">

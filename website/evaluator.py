@@ -17,7 +17,7 @@ evaluator = Blueprint('evaluator', __name__)
 @restrict_user(current_user, ['Evaluator'])
 def private():
     user = User.query.get(int(current_user.id))
-    projects = Project.query.filter(Project.status != 'new' and Project.endDate >= date.today())
+    projects = Project.query.filter(Project.status != 'new' and Project.endDate >= date.today()).all()
 
     return render_template('evaluator.html', user=current_user, user_data=user, projects=projects)
 

@@ -133,7 +133,7 @@ def deleteDoc():
     db.session.commit()
 
     flash("Documento cancellato!", category="success")
-    return redirect(url_for('researcher.private'))
+    return redirect(url_for('researcher.open',id=p_id))
 
 
 @researcher.route('/editDoc',  methods=['GET', 'POST'])
@@ -201,7 +201,7 @@ def edit():
             if file.filename:
                 doc = Document.query.filter_by(idProj=p_id, name = file.filename).first()
                 if not doc:
-                    new_doc = Document(idProj=proj.id, name=file.filename)
+                    new_doc = Document(idProj=proj.id, name=file.filename, type=os.path.splitext(file.filename)[1].replace(".",""))
                     db.session.add(new_doc)
                     file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
                 else:

@@ -89,9 +89,10 @@ def checkIfEdit(proj, docs):
     for doc in docs:
         if(doc.status == "changes_request"):
             f = True
+    print(f"flag {f}")
     if(f == False and proj.status.value != "new"):
         proj.status = "pending"
-    return "asds"
+    return proj.status
 
 
 @researcher.route('/delete',  methods=['GET', 'POST'])
@@ -145,7 +146,6 @@ def editDoc():
     user = User.query.get(int(current_user.id))
     proj = Project.query.get(p_id)
     doc = Document.query.filter_by(idProj=p_id, name = d_id).first()
-    docs = Document.query.filter_by(idProj=p_id)
     rep = Report.query.filter_by(idDocName=d_id, idDocProj=p_id).first()
 
 
@@ -155,19 +155,29 @@ def editDoc():
         file = request.files.get('files')
         type = request.form.get('type')
     
-    os.remove(f"{os.getcwd()}/files/{user.username}/{proj.id}/{doc.name}")
-    db.session.delete(doc)
-    db.session.delete(rep)
-    
-    new_doc = Document(idProj=proj.id, name=file.filename, type=type, status="default")
-    db.session.add(new_doc)
-    print(os.getcwd())
-    file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
-    
-    checkIfEdit(proj, docs)
-    db.session.commit()
+    if file.filename:
+        doc = Document.query.filter_by(idProj=p_id, name = file.filename).first()
+        if not doc:
+            os.remove(f"{os.getcwd()}/files/{user.username}/{proj.id}/{doc.name}")
+            db.session.delete(doc)
+            db.session.delete(rep)
+
+            new_doc = Document(idProj=proj.id, name=file.filename, type=type, status="default")
+            file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+            db.session.add(new_doc)
+            db.session.commit()
+            
+            print(os.getcwd())
+            file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+            
+            flash("Documento modificato!", category="success")
+            
+            docs = Document.query.filter_by(idProj=p_id)
+            checkIfEdit(proj, docs)
+        else:
+            print(doc.name)
+            flash(f"Il file {file.filename} è già presente", category="error")
  
-    flash("Documento modificato!", category="success")
     return redirect(url_for('researcher.open',id=p_id))
 
 
@@ -182,7 +192,6 @@ def edit():
 
     print(proj.status)
 
-
     if request.method == 'GET':
         return render_template('modifica_progetto.html', user=current_user, user_data=user, proj=proj, docs=docs)
     if request.method == 'POST':
@@ -190,13 +199,7 @@ def edit():
         desc = request.form.get('description')
         status = request.form.get('status')
         files = request.files.getlist('files')
-        
-
-
         # os.makedirs(f"{os.getcwd()}/files/{user.username}/{p_id}/")
-
-
-
         for file in files:
             if file.filename:
                 doc = Document.query.filter_by(idProj=p_id, name = file.filename).first()
@@ -220,18 +223,3 @@ def edit():
 
     return redirect(url_for('researcher.private'))
 
-
-@researcher.route('/report',  methods=['GET', 'POST'])
-@login_required
-@restrict_user(current_user, ['Researcher'])
-def report():
-    projId = request.args.get('pip')
-    proj = Project.query.get(int(projId))
-    docId = request.args.get('did')
-    user = User.query.get(int(proj.idRes))
-    rep = request.args.get('r')
-
-    report = Report.query.get(rep)
-
-    if request.method == 'GET':
-        return render_template('reportRes.html', user=current_user, user_data=user, p=proj, rep=report)

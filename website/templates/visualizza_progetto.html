@@ -4,29 +4,6 @@
     Nome: {{ p.name }}, Description {{ p.description }}, Status {{ p.status.value }}
     </br>
     Documenti:
-    <!-- {% for d in q %}
-        <li>Name: <a href="{{url_for('evaluator.download', p = p.id, dName = d[1].name)}}" target=”_blank”>{{ d[1].name }}</a>, status {{ d[1].status.value }}  
-        {% if user.__class__.__name__ in "Researcher" %}
-            {%if p.status.value in "new" or d[1].status.value in "changes_request" and p.status.value not in ["approved","rejected"] %}
-                <a href="{{url_for('researcher.deleteDoc', pip = p.id, did = d[1].name)}}"> Delete Document </a>  
-                <a href="{{url_for('researcher.editDoc', pip = p.id, did = d[1].name)}}"> Edit Document </a>
-            {% endif%}
-            {% if d[0] %}
-                <a href="{{url_for('researcher.report', pip = p.id, did = d[1].name, r = d[0].id)}}"> Open Report </a>
-            {%endif%}
-        {% elif d[0] %}
-            {% if user.__class__.__name__ in "Evaluator" and d[1].status.value in "default" and p.status.value not in "approved" and p.status.value not in "rejected"%}
-                <a href="{{url_for('evaluator.requestC', pip = p.id, did = d[1].name)}}"> Request changes </a>
-            {% endif %}    
-            {% if p.status.value not in "approved" and p.status.value not in "rejected" %}
-                <a href="{{url_for('evaluator.report', pip = p.id, did = d[1].name, r = d[0].id)}}"> Edit Report </a>
-            {% else %}
-                <a href="{{url_for('evaluator.viewReport', pip = p.id, did = d[1].name, r = d[0].id)}}"> Open Report </a>
-            {% endif %} 
-        {% else %}
-            <a href="{{url_for('evaluator.report', pip = p.id, did = d[1].name, r = d[0].id)}}"> Create Report </a>
-        {% endif %}
-    {% endfor %}    -->
 
     <table class="table table-hover table-bordered">
         <thead>
@@ -48,7 +25,7 @@
             {% for r,d in q %}
                 <tr>
                     <td> 
-                        <a href="{{url_for('evaluator.download', p = p.id, dName = d.name)}}" target=”_blank”>{{ os.path.splitext(d.name)[0] }}</a> 
+                        <a href="{{url_for('util.download', p = p.id, dName = d.name)}}" target=”_blank”>{{ os.path.splitext(d.name)[0] }}</a> 
                     </td>
                     <td> 
                         {%if d.status.value in "default"%}
@@ -83,7 +60,7 @@
                     {% if user.__class__.__name__ in "Researcher" %}
                         <td class="butt">
                             {% if r %}
-                                <a href="{{url_for('researcher.report', pip = p.id, did = d.name, r = r.id)}}"> 
+                                <a href="{{url_for('util.report', pip = p.id, did = d.name, r = r.id)}}"> 
                                     <span class="material-symbols-outlined">
                                         file_open
                                     </span>
@@ -130,7 +107,7 @@
                                     </span> 
                                 </a>
                             {% else %}
-                                <a  href="{{url_for('evaluator.viewReport', pip = p.id, did = d.name, r = r.id)}}">  
+                                <a  href="{{url_for('util.report', pip = p.id, did = d.name, r = r.id)}}">  
                                     <span class="material-symbols-outlined">
                                         file_open
                                     </span> 

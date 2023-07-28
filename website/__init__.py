@@ -16,6 +16,7 @@ def create_app():
     db.init_app(app)
 
     from .auth import auth
+    from .util import util
     from .researcher import researcher
     from .evaluator import evaluator
     from .redirect import redirect2
@@ -24,6 +25,7 @@ def create_app():
     app.register_blueprint(redirect2, url_prefix='/')
     app.register_blueprint(researcher, url_prefix='/researcher')
     app.register_blueprint(evaluator, url_prefix='/evaluator')
+    app.register_blueprint(util, url_prefix='/util')
 
     from .models import User
     from .models import Evaluator

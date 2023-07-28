@@ -17,17 +17,18 @@
         </div>
         <div class="form-group">
             <label for="description">Edit Project Files</label>
-            <input
-                name="files"
-                type="file"
-                class="form-control"
-                id="file"
-                placeholder="Files"
-                required
-            />
+            <div class="form-group">
+                <label for="images" class="drop-container" id="dropcontainer">
+                    <span class="drop-title">Drop files here</span>
+                    or
+                    <input name="files" type="file" id="file" multiple>
+                </label>
+            </div>
         </div><br />
     
+        
     
+        <br>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
     

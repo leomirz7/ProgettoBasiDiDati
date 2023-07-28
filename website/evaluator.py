@@ -57,19 +57,7 @@ def open():
     return redirect(url_for('evaluator.open'))
 
 
-@evaluator.route('/download')
-@login_required
-@restrict_user(current_user, ['Evaluator', 'Researcher'])
-def download():
-    projId = request.args.get('p')
-    print(projId)
-    proj = Project.query.get(int(projId))
-    filename = request.args.get('dName')
 
-    user = User.query.get(int(proj.idRes))
-
-    uploads = f"{os.getcwd()}/files/{user.username}/{proj.id}/{filename}"
-    return send_file(uploads)
 
 
 @evaluator.route('/report', methods=['GET', 'POST'])
@@ -136,11 +124,11 @@ def evaluate():
     q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
     media = 0
     i = 0
-    for tupla in q:
-        if(tupla[0] == None):
+    for r,d in q:
+        if(r == None or proj.status.value == "changes_request"):
             flash("Non tutti i documenti sono stati valutati", category='error')
             return redirect(url_for('redirect2.home'))
-        media += tupla[0].score 
+        media += r.score 
         i += 1
     if(media/i >= 18):
         proj.status = "approved"
@@ -151,18 +139,3 @@ def evaluate():
     db.session.commit()
     return redirect(url_for('redirect2.home'))
 
-    
-@evaluator.route('/viewReport',  methods=['GET', 'POST'])
-@login_required
-@restrict_user(current_user, ['Evaluator'])
-def viewReport():
-    projId = request.args.get('pip')
-    proj = Project.query.get(int(projId))
-    docId = request.args.get('did')
-    user = User.query.get(int(proj.idRes))
-    rep = request.args.get('r')
-
-    report = Report.query.get(rep)
-
-    if request.method == 'GET':
-        return render_template('reportRes.html', user=current_user, user_data=user, p=proj, rep=report)

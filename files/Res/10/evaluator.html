@@ -1,16 +1,14 @@
 {% extends "base.html" %} {% block title %}Evaluator Home{% endblock %} {% block content
 %}
 
-    </br></br>
-    <h3> Welcome to the web app, {{ user_data.username }}!</h3> 
+    Welcome to the web app, {{ user_data.username }}! </br>
 
     {%if projects %}
 
-    </br></br>
 
-        <h4>All the projects:</h4>
+        All the projects:
 
-        </br>
+        </br></br>
 
         <table class="table table-hover table-bordered">
             <thead>

@@ -5,6 +5,12 @@ from .models import User, Evaluator, Researcher
 
 from . import db    # prende db da __init__.py
 
+# Import smtplib for the actual sending function
+import smtplib
+
+# Import the email modules we'll need
+from email.message import EmailMessage
+
 auth = Blueprint('auth', __name__)
 
 
@@ -40,7 +46,7 @@ def login():
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
-    print("aaa") 
+
     if request.method == 'POST':
         username = request.form.get('user')
         email = request.form.get('email')

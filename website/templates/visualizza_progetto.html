@@ -11,13 +11,13 @@
                 <span class="material-symbols-outlined approved">
                     done
                 </span>
-                <span class="approved" > Approved </span>
+                <span class="approved" > Approved {{p.grade}}</span>
                 
             {%elif p.status.value in "rejected"%}
                 <span class="material-symbols-outlined rejected">
                     close
                 </span>
-                <span class="rejected"> Rejected </span>
+                <span class="rejected"> Rejected {{p.grade}} </span>
                 
             {%elif p.status.value in "changes_request"%}
                 <span class="material-symbols-outlined changes_request">
@@ -65,7 +65,7 @@
                 {% for r,d in q %}
                     <tr>
                         <td> 
-                            <a href="{{url_for('util.download', p = p.id, dName = d.name)}}" target=”_blank”>{{ os.path.splitext(d.name)[0] }}</a> 
+                            <a href="{{url_for('util.download', p = p.id, dName = d.name)}}" target=”_blank”>{{ os.path.splitext(d.name)[0] }}  {{r.idDocProj}}</a> 
                         </td>
                         <td> 
                             {%if d.status.value in "default"%}

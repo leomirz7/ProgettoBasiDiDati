@@ -8,6 +8,7 @@ from flask_login import *
 from website import db
 from website.models import Report, Status, User, Project, Document
 from website.util import restrict_user
+from .util import results
 
 researcher = Blueprint('researcher', __name__)
 
@@ -68,13 +69,10 @@ def open():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
     proj = Project.query.get(p_id)
+    
+    result = results(p_id)
+    return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=result, os = os)
 
-    q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
-
-    if request.method == 'GET':
-        return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q, os = os)
-
-    return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q, os = os)
 
 
 def checkIfEdit(proj, docs):
@@ -194,8 +192,6 @@ def edit():
         desc = request.form.get('description')
         status = request.form.get('status')
 
-        print("aaaaaaaa", status)
-
         files = request.files.getlist('files')
 
         print(request.values)
@@ -212,17 +208,19 @@ def edit():
 
         proj.name = name
         proj.description = desc
-        print(proj.status)
-
-        if(status):
-
-            proj.status = "pending"
-            proj.endDate = date.today() + timedelta(days=30)
-            db.session.commit()
-            flash('Progetto pubblicato', category="success")
-            return redirect(url_for('researcher.private'))
-
         db.session.commit()
+
+        nDocs = Document.query.filter_by(idProj=p_id).count()
+        if(status):
+            if(nDocs == 0):
+                flash('Non pubblicato, non ci sono documenti', category="error")
+            else :
+                proj.status = "pending"
+                proj.endDate = date.today() + timedelta(days=30)
+                db.session.commit()
+                flash('Progetto pubblicato', category="success")
+                return redirect(url_for('researcher.private'))
+
         flash('Progetto salvato', category="success")
 
     return redirect(url_for('researcher.edit', id=p_id))

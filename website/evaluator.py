@@ -30,12 +30,10 @@ def open():
     p_id = request.args.get('id')
     proj = Project.query.get(p_id)
 
-    q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
+    result = results(p_id)
 
-    if request.method == 'GET':
-        return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=q, os = os)
+    return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=result, os = os)
 
-    return redirect(url_for('evaluator.open'))
 
 
 @evaluator.route('/report', methods=['GET', 'POST'])
@@ -51,9 +49,9 @@ def report():
 
     rep = request.args.get('r')
 
-    report = Report.query.get(rep)
 
     if request.method == 'GET':
+        report = Report.query.get(rep)
         return render_template('report.html', user=current_user, user_data=user, p=proj, rep=report)
 
     if request.method == 'POST':
@@ -95,16 +93,20 @@ def evaluate():
     p_id = request.args.get('id')
     proj = Project.query.get(p_id)
 
-    q = db.session.query(Report, Document).join(Report, Document.name == Report.idDocName and Document.idProj == Report.idDocProj, isouter=True).filter(Document.idProj == p_id).all()
+    result = results(p_id)
     media = 0
     i = 0
 
-    for r,_ in q:
+    for r,_ in result:
         if(r == None or proj.status.value == "changes_request"):
             flash("Non tutti i documenti sono stati valutati", category='error')
-            return redirect(url_for('redirect2.home'))
+            return redirect(url_for('evaluator.private'))
         media += r.score 
         i += 1
+    if i == 0:
+        flash("Non ci sono documenti da valutare", category='error')
+        return redirect(url_for('evaluator.private'))
+    proj.grade = media/i
     if(media/i >= 18):
         proj.status = "approved"
         flash("Progetto approvato", category='success')
@@ -112,4 +114,4 @@ def evaluate():
         proj.status = "rejected"
         flash("Progetto rifiutato", category='error')
     db.session.commit()
-    return redirect(url_for('redirect2.home'))
+    return redirect(url_for('evaluator.private'))

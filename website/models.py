@@ -10,7 +10,7 @@ class User(db.Model):
     __table_name__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150))
-    email = db.Column(db.String(150))
+    email = db.Column(db.String(150))#, unique = True
     pwd = db.Column(db.String(150))
     # tipo = db.Column(db.String(64))
 
@@ -36,10 +36,11 @@ class StatusDoc(enum.Enum):
 
 
 class Project(db.Model):
-    id = db.Column(db.Integer, primary_key=True, auto_increment=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(30))
     description = db.Column(db.String(1000))
     endDate = db.Column(db.Date())
+    grade = db.Column(db.Integer)
     status = db.Column(
         db.Enum(Status, values_callable=lambda obj: [
             e.value for e in obj]),

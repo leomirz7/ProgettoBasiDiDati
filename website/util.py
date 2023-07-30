@@ -3,8 +3,9 @@ import os
 
 from flask import Blueprint, redirect, render_template, request, send_file, url_for
 from flask_login import current_user, login_required
+from website import db
 
-from website.models import Project, Report, User
+from website.models import Document, Project, Report, User
 
 def restrict_user(current_user, user_type):
     def decorator(route_function):
@@ -45,3 +46,17 @@ def download():
 
     uploads = f"{os.getcwd()}/files/{user.username}/{proj.id}/{filename}"
     return send_file(uploads)
+
+
+def results(p_id):
+    q = db.session.query(Report, Document).join(Report, Report.idDocProj == Document.idProj, isouter=True).filter(Document.idProj == p_id).all()
+    result = []
+    for r,d in q:
+        if(not r):
+            print(f"docProj id [{d.idProj}] Non esiste il report ")
+            result.append([None,d])
+        elif(d.name == r.idDocName):
+            print(f"reportProjId [{r.idDocProj}], docProjId [{d.idProj}], proj id [{p_id}] ")
+            print(f"docName [{r.idDocName}], docName [{d.name}] ")
+            result.append([r,d])
+    return result

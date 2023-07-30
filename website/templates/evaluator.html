@@ -31,13 +31,13 @@
                                 <span class="material-symbols-outlined approved">
                                     done
                                 </span>
-                                <span class="approved" > Approved </span>
+                                <span class="approved" > Approved {{p.grade}}/30 </span>
                                 
                             {%elif p.status.value in "rejected"%}
                                 <span class="material-symbols-outlined rejected">
                                     close
                                 </span>
-                                <span class="rejected"> Rejected </span>
+                                <span class="rejected"> Rejected {{p.grade}}/30</span>
                                 
                             {%elif p.status.value in "changes_request"%}
                                 <span class="material-symbols-outlined changes_request">
@@ -61,11 +61,9 @@
                                     </span>
                                 </a> 
                             {% else %}
-                                <a href="{{url_for('evaluator.evaluate', id = p.id)}}"> 
-                                    <span class="material-symbols-outlined">
-                                        done_all
-                                    </span>
-                                </a> 
+                                <span class="material-symbols-outlined">
+                                    done_all
+                                </span>
                             {% endif %}
                         </td>
                     </tr>

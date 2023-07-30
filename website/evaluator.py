@@ -18,7 +18,8 @@ evaluator = Blueprint('evaluator', __name__)
 def private():
     user = User.query.get(int(current_user.id))
     projects = Project.query.filter(Project.status != 'new' and Project.endDate >= date.today()).all()
-
+    for p in projects:
+        print(f"grade: {p.grade}, name {p.name}")
     return render_template('evaluator.html', user=current_user, user_data=user, projects=projects)
 
 
@@ -29,7 +30,6 @@ def open():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
     proj = Project.query.get(p_id)
-
     result = results(p_id)
 
     return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=result, os = os)

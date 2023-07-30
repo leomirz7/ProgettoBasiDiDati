@@ -11,13 +11,13 @@
                 <span class="material-symbols-outlined approved">
                     done
                 </span>
-                <span class="approved" > Approved {{p.grade}}</span>
+                <span class="approved" > Approved {{p.grade}}/30</span>
                 
             {%elif p.status.value in "rejected"%}
                 <span class="material-symbols-outlined rejected">
                     close
                 </span>
-                <span class="rejected"> Rejected {{p.grade}} </span>
+                <span class="rejected"> Rejected {{p.grade}}/30</span>
                 
             {%elif p.status.value in "changes_request"%}
                 <span class="material-symbols-outlined changes_request">
@@ -62,10 +62,10 @@
                 </tr>
             </thead>
             <tbody>
-                {% for r,d in q %}
+                {% for d,r in q %}
                     <tr>
                         <td> 
-                            <a href="{{url_for('util.download', p = p.id, dName = d.name)}}" target=”_blank”>{{ os.path.splitext(d.name)[0] }}  {{r.idDocProj}}</a> 
+                            <a href="{{url_for('util.download', p = p.id, dName = d.name)}}" target=”_blank”>{{ os.path.splitext(d.name)[0] }}</a> 
                         </td>
                         <td> 
                             {%if d.status.value in "default"%}
@@ -134,6 +134,7 @@
                             {% endif %}
                         {% else %}
                             <td class="butt">
+                                
                                 {% if not r %}
                                     <a title="Open Evaluation" href="{{url_for('evaluator.report', pip = p.id, did = d.name, r = r.id)}}"> 
                                         <span class="material-symbols-outlined">
@@ -147,7 +148,7 @@
                                         </span> 
                                     </a>
                                 {% else %}
-                                    <a  href="{{url_for('util.report', pip = p.id, did = d.name, r = r.id)}}">  
+                                    <a href="{{url_for('util.report', pip = p.id, did = d.name, r = r.id)}}">  
                                         <span class="material-symbols-outlined">
                                             file_open
                                         </span> 

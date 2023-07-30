@@ -49,14 +49,16 @@ def download():
 
 
 def results(p_id):
-    q = db.session.query(Report, Document).join(Report, Report.idDocProj == Document.idProj, isouter=True).filter(Document.idProj == p_id).all()
-    result = []
+    q = db.session.query(Report, Document).join(Report, Report.idDocProj == Document.idProj).filter(Document.idProj == p_id).all()
+    result = {}
+    doc = Document.query.filter_by(idProj = p_id).all()
+    
+    for d in doc:
+        result[d] = None
     for r,d in q:
-        if(not r):
-            print(f"docProj id [{d.idProj}] Non esiste il report ")
-            result.append([None,d])
-        elif(d.name == r.idDocName):
-            print(f"reportProjId [{r.idDocProj}], docProjId [{d.idProj}], proj id [{p_id}] ")
-            print(f"docName [{r.idDocName}], docName [{d.name}] ")
-            result.append([r,d])
-    return result
+        if(r):
+            if(d.name == r.idDocName):
+                result[d]=r
+    for a,b in result.items():
+        print(a,b)
+    return result.items()

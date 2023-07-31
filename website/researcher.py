@@ -45,7 +45,7 @@ def create():
         db.session.add(new_proj)
         db.session.commit()
 
-        os.makedirs(f"{os.getcwd()}/files/{user.username}/{new_proj.id}/")
+        os.makedirs(f"{os.getcwd()}/files/{user.id}/{new_proj.id}/")
         for file in files:
             """ print("\n\n\n\n\n")
             print(os.path.splitext(file.filename))
@@ -54,7 +54,7 @@ def create():
             db.session.add(new_doc)
 
             print(os.getcwd())
-            file.save(f"{os.getcwd()}/files/{user.username}/{new_proj.id}/{file.filename}")
+            file.save(f"{os.getcwd()}/files/{user.id}/{new_proj.id}/{file.filename}")
 
         db.session.commit()
         flash('Progetto creato', category="success")
@@ -99,7 +99,7 @@ def delete():
     user = User.query.get(int(current_user.id))
     docs = Document.query.filter_by(idProj=p_id)
 
-    shutil.rmtree(f"{os.getcwd()}/files/{user.username}/{proj.id}/")
+    shutil.rmtree(f"{os.getcwd()}/files/{user.id}/{proj.id}/")
 
     for doc in docs:
         db.session.delete(doc)
@@ -122,7 +122,7 @@ def deleteDoc():
     doc = Document.query.filter_by(idProj=p_id, name = d_id).first()
     docs = Document.query.filter_by(idProj=p_id)
     
-    os.remove(f"{os.getcwd()}/files/{user.username}/{proj.id}/{doc.name}")
+    os.remove(f"{os.getcwd()}/files/{user.id}/{proj.id}/{doc.name}")
     db.session.delete(doc)
     checkIfEdit(proj, docs)
     
@@ -151,17 +151,17 @@ def editDoc():
     if file.filename:
         doc = Document.query.filter_by(idProj=p_id, name = file.filename).first()
         if not doc:
-            os.remove(f"{os.getcwd()}/files/{user.username}/{proj.id}/{doc_old.name}")
+            os.remove(f"{os.getcwd()}/files/{user.id}/{proj.id}/{doc_old.name}")
             db.session.delete(doc_old)
             db.session.delete(rep)
 
             new_doc = Document(idProj=proj.id, name=file.filename, type=type, status="default")
-            file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+            file.save(f"{os.getcwd()}/files/{user.id}/{proj.id}/{file.filename}")
             db.session.add(new_doc)
             db.session.commit()
             
             print(os.getcwd())
-            file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+            file.save(f"{os.getcwd()}/files/{user.id}/{proj.id}/{file.filename}")
             
             flash("Documento modificato!", category="success")
             
@@ -202,7 +202,7 @@ def edit():
                 if not doc:
                     new_doc = Document(idProj=proj.id, status="default", name=file.filename, type=os.path.splitext(file.filename)[1].replace(".",""))
                     db.session.add(new_doc)
-                    file.save(f"{os.getcwd()}/files/{user.username}/{proj.id}/{file.filename}")
+                    file.save(f"{os.getcwd()}/files/{user.id}/{proj.id}/{file.filename}")
                 else:
                     flash(f"Il file {file.filename} è già presente", category="error")
 

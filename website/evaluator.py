@@ -97,11 +97,11 @@ def evaluate():
     media = 0
     i = 0
 
-    for r,_ in result:
+    for _,r in result:
         if(r == None or proj.status.value == "changes_request"):
             flash("Non tutti i documenti sono stati valutati", category='error')
             return redirect(url_for('evaluator.private'))
-        media += r.score 
+        media += r.score
         i += 1
     if i == 0:
         flash("Non ci sono documenti da valutare", category='error')

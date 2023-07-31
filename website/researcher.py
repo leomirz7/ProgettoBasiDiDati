@@ -68,8 +68,10 @@ def create():
 def open():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
-    proj = Project.query.get(p_id)
-    
+    proj = Project.query.get_or_404(p_id)
+    if(proj.idRes != user.id):
+        return render_template('401.html')
+
     result = results(p_id)
     return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=result, os = os)
 
@@ -94,7 +96,7 @@ def checkIfEdit(proj, docs):
 def delete():
     p_id = request.args.get('id')
     print(p_id)
-    proj = Project.query.get(p_id)
+    proj = Project.query.get_or_404(p_id)
 
     user = User.query.get(int(current_user.id))
     docs = Document.query.filter_by(idProj=p_id)
@@ -116,7 +118,7 @@ def delete():
 def deleteDoc():
     p_id = request.args.get('pip')
     d_id = request.args.get('did')
-    proj = Project.query.get(p_id)
+    proj = Project.query.get_or_404(p_id)
 
     user = User.query.get(int(current_user.id))
     doc = Document.query.filter_by(idProj=p_id, name = d_id).first()
@@ -138,7 +140,7 @@ def editDoc():
     p_id = request.args.get('pip')
     d_id = request.args.get('did')
     user = User.query.get(int(current_user.id))
-    proj = Project.query.get(p_id)
+    proj = Project.query.get_or_404(p_id)
     doc_old = Document.query.filter_by(idProj=p_id, name = d_id).first()
     rep = Report.query.filter_by(idDocName=d_id, idDocProj=p_id).first()
 
@@ -180,7 +182,7 @@ def editDoc():
 def edit():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
-    proj = Project.query.get(p_id)
+    proj = Project.query.get_or_404(p_id)
     docs = Document.query.filter_by(idProj=p_id)
 
 
@@ -202,6 +204,7 @@ def edit():
                 if not doc:
                     new_doc = Document(idProj=proj.id, status="default", name=file.filename, type=os.path.splitext(file.filename)[1].replace(".",""))
                     db.session.add(new_doc)
+
                     file.save(f"{os.getcwd()}/files/{user.id}/{proj.id}/{file.filename}")
                 else:
                     flash(f"Il file {file.filename} è già presente", category="error")

@@ -29,7 +29,7 @@ def private():
 def open():
     user = User.query.get(int(current_user.id))
     p_id = request.args.get('id')
-    proj = Project.query.get(p_id)
+    proj = Project.query.get_or_404(p_id)
     result = results(p_id)
 
     return render_template('visualizza_progetto.html', user=current_user, user_data=user, p=proj, q=result, os = os)
@@ -41,17 +41,17 @@ def open():
 @restrict_user(current_user, ['Evaluator'])
 def report():
     projId = request.args.get('pip')
-    proj = Project.query.get(int(projId))
+    proj = Project.query.get_or_404(int(projId))
 
     docId = request.args.get('did')
 
-    user = User.query.get(int(proj.idRes))
+    user = User.query.get_or_404(int(proj.idRes))
 
     rep = request.args.get('r')
 
 
     if request.method == 'GET':
-        report = Report.query.get(rep)
+        report = Report.query.get_or_404(rep)
         return render_template('report.html', user=current_user, user_data=user, p=proj, rep=report)
 
     if request.method == 'POST':
@@ -75,7 +75,7 @@ def report():
 @restrict_user(current_user, ['Evaluator'])
 def requestC():
     projId = request.args.get('pip')
-    proj = Project.query.get(int(projId))
+    proj = Project.query.get_or_404(int(projId))
     docId = request.args.get('did')
     docs = Document.query.filter_by(idProj=projId, name = docId).first()
 
@@ -91,8 +91,7 @@ def requestC():
 @restrict_user(current_user, ['Evaluator'])
 def evaluate():
     p_id = request.args.get('id')
-    proj = Project.query.get(p_id)
-
+    proj = Project.query.get_or_404(p_id)
     result = results(p_id)
     media = 0
     i = 0

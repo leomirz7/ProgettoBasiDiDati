@@ -51,7 +51,7 @@ def report():
 
 
     if request.method == 'GET':
-        report = Report.query.get_or_404(rep)
+        report = Report.query.get(rep)
         return render_template('report.html', user=current_user, user_data=user, p=proj, rep=report)
 
     if request.method == 'POST':
@@ -98,7 +98,7 @@ def evaluate():
 
     for _,r in result:
         if(r == None or proj.status.value == "changes_request"):
-            flash("Non tutti i documenti sono stati valutati", category='error')
+            flash("Not all documents have been evaluated", category='error')
             return redirect(url_for('evaluator.private'))
         media += r.score
         i += 1
@@ -108,9 +108,9 @@ def evaluate():
     proj.grade = media/i
     if(media/i >= 18):
         proj.status = "approved"
-        flash("Progetto approvato", category='success')
+        flash("Project approved", category='success')
     else:
         proj.status = "rejected"
-        flash("Progetto rifiutato", category='error')
+        flash("Project rejected", category='error')
     db.session.commit()
     return redirect(url_for('evaluator.private'))

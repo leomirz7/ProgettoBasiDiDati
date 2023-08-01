@@ -163,7 +163,6 @@ def editDoc():
             db.session.commit()
             
             print(os.getcwd())
-            file.save(f"{os.getcwd()}/files/{user.id}/{proj.id}/{file.filename}")
             
             flash("Documento modificato!", category="success")
             

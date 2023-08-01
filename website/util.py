@@ -44,7 +44,7 @@ def download():
 
     user = User.query.get(int(proj.idRes))
 
-    uploads = f"{os.getcwd()}/files/{user.username}/{proj.id}/{filename}"
+    uploads = f"{os.getcwd()}/files/{user.id}/{proj.id}/{filename}"
     return send_file(uploads)
 
 
